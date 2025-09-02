@@ -13,6 +13,10 @@ public enum ErrorStatus implements BaseErrorCode {
     // 인증
     USER_NOT_EXISTED(HttpStatus.NOT_FOUND,"USER_400","존재하지 않는 계정입니다"),
     UNEXPECTED_TOKEN(HttpStatus.NOT_FOUND,"TOKEN_400","존재하지 않는 토큰 입니다"),
+
+    // 상품
+    PRODUCT_NOT_EXISTED(HttpStatus.NOT_FOUND,"PRODUCT_400","존재하지 않는 상품 입니다"),
+
     // 기본 에러
     _BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON_400", "잘못된 요청입니다."),
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON_401", "인증이 필요합니다."),
