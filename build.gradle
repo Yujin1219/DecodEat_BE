@@ -47,6 +47,11 @@ dependencies {
 	//springdoc-openapi
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0' // 최신 버전 확인
 
+
+	// - AWS 서비스(Spring Cloud와 S3, SES 등)와의 통합을 쉽게 해주며, Spring Boot에서 여러 AWS 관련 자동 설정을 지원
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	// S3 설정
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.649'
 }
 
 tasks.named('test') {
