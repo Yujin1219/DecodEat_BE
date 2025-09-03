@@ -1,6 +1,7 @@
 package com.DecodEat.domain.products.converter;
 
 import com.DecodEat.domain.products.dto.response.ProductDetailDto;
+import com.DecodEat.domain.products.dto.response.ProductRegisterResponseDto;
 import com.DecodEat.domain.products.entity.Product;
 import com.DecodEat.domain.products.entity.ProductNutrition;
 import com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory;
@@ -13,7 +14,7 @@ import static com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategor
 
 public class ProductConverter {
     public static ProductDetailDto toProductDetailDto(Product product,
-                                                      List<String> imageUrls ,
+                                                      List<String> productInfoImageUrls ,
                                                       ProductNutrition productNutrition) {
         Map<RawMaterialCategory, List<String>> nutrientsMap =
                 product.getIngredients().stream()
@@ -43,7 +44,7 @@ public class ProductConverter {
                 .sodium(productNutrition.getSodium())
                 .sugar(productNutrition.getSugar())
                 .transFat(productNutrition.getTransFat())
-                .imageUrl(imageUrls)
+                .imageUrl(productInfoImageUrls)
                 .animalProteins(nutrientsMap.get(ANIMAL_PROTEIN))
                 .plantProteins(nutrientsMap.get(PLANT_PROTEIN))
                 .complexCarbs(nutrientsMap.get(COMPLEX_CARBOHYDRATE))
@@ -51,6 +52,15 @@ public class ProductConverter {
                 .additives(nutrientsMap.get(ADDITIVES))
                 .others(nutrientsMap.get(OTHERS))
                 .allergens(nutrientsMap.get(ALLERGENS))
+                .build();
+    }
+
+    public static ProductRegisterResponseDto toProductRegisterDto(Product product, List<String> productInfoImageUrls){
+        return ProductRegisterResponseDto.builder()
+                .name(product.getProductName())
+                .manufacturer(product.getManufacturer())
+                .productImage(product.getProductImage())
+                .productInfoImages(productInfoImageUrls)
                 .build();
     }
 }
