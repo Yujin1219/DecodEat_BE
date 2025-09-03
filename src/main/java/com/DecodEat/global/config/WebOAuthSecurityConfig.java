@@ -20,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @RequiredArgsConstructor
 @Configuration
@@ -29,13 +30,14 @@ public class WebOAuthSecurityConfig {
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
+    private final CorsConfigurationSource corsConfigurationSource; // CorsCongifuragtinoSource Bean 주입 위함
 
-    @Bean
-    public WebSecurityCustomizer configure() {
-        // H2 콘솔 및 정적 리소스에 대한 시큐리티 기능 비활성화
-        return (web) -> web.ignoring()
-                .requestMatchers("/img/**", "/css/**", "/js/**", "/favicon.ico", "/error");
-    }
+//    @Bean
+//    public WebSecurityCustomizer configure() {
+//        // H2 콘솔 및 정적 리소스에 대한 시큐리티 기능 비활성화
+//        return (web) -> web.ignoring()
+//                .requestMatchers("/img/**", "/css/**", "/js/**", "/favicon.ico", "/error");
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,11 +47,13 @@ public class WebOAuthSecurityConfig {
 
         // 2. 불필요한 기능 비활성화
         http.csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화 (토큰 방식이므로)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .httpBasic(basic -> basic.disable()) // HTTP Basic 인증 비활성화
                 .formLogin(form -> form.disable()); // 폼 기반 로그인 비활성화
 
         // 3. 요청별 인가 규칙 설정
         http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/img/**", "/css/**", "/js/**", "/favicon.ico", "/error").permitAll()
                 .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll() // 토큰 재발급 요청은 누구나 가능
                 .requestMatchers("/api/token").permitAll()
                 .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN") // 유저 관련 API는 USER 또는 ADMIN 권한 필요
