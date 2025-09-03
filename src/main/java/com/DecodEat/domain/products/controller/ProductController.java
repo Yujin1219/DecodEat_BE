@@ -36,20 +36,20 @@ public class ProductController {
     @Operation(
             summary = "제품 등록",
             description = "상품 이미지, 제품명, 회사명으로 상품을 등록합니다")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//- **@RequestBody**: HTTP 요청 본문을 처리하며 주로 JSON, XML 데이터를 객체로 변환할 때 사용됩니다.
-//
-//- **@ModelAttribute**: 요청 파라미터와 폼 데이터를 처리하며, 주로 HTML 폼 데이터와 관련된 작업에 사용됩니다.
-//
-//- **@ParameterObject**: Springdoc OpenAPI와 함께 사용되어 API 문서화를 돕고, 여러 요청 파라미터를 하나의 객체로 그룹화하는데 사용됩니다.
-
-    public ApiResponse<ProductRegisterResponseDto> addProduct(
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //이 엔드포인트가 multipart/form-data 타입의 요청 본문을 소비(consume)한다는 것을 명확하게 선언
+    public ApiResponse<ProductRegisterResponseDto> registerProduct(
             @CurrentUser User user,
-            @ParameterObject ProductRegisterRequestDto request,
+            @RequestParam("name") String name,
+            @RequestParam("manufacturer") String manufacturer,
             @RequestPart("productImage") MultipartFile productImage,
             @RequestPart("productInfoImages") List<MultipartFile> productInfoImages
     ) {
-        return ApiResponse.onSuccess(productService.addProduct(user, request, productImage, productInfoImages));
+        ProductRegisterRequestDto requestDto = ProductRegisterRequestDto.builder()
+                .name(name)
+                .manufacturer(manufacturer)
+                .build();
+
+        return ApiResponse.onSuccess(productService.addProduct(user, requestDto, productImage, productInfoImages));
     }
 
 

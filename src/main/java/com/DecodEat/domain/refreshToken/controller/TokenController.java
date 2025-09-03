@@ -1,4 +1,4 @@
-package com.DecodEat.domain.RefreshToken.controller;
+package com.DecodEat.domain.refreshToken.controller;
 
 import com.DecodEat.domain.RefreshToken.dto.request.CreateAccessTokenRequest;
 import com.DecodEat.domain.RefreshToken.dto.response.CreateAccessTokenResponse;
