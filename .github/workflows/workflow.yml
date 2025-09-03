@@ -37,12 +37,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 4. application.yml 생성
-      - name: Make application.yml
+      # 4. application.yml 생성 (base64 안전 처리)
+      - name: Make application.yml from Secret
         if: contains(github.ref, 'main') || contains(github.ref, 'refs/pull/')
         run: |
           mkdir -p ./src/main/resources
-          echo "${{ secrets.APPLICATION_DEV_YML }}" > ./src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_DEV_YML_BASE64 }}" | base64 --decode > ./src/main/resources/application.yml
 
       # 5. gradlew 실행 권한 부여
       - name: Grant Execute Permission For Gradlew
