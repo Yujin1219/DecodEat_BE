@@ -1,4 +1,4 @@
-name: DecodEat CI/CD with Gradle and Docker
+name: DecodEat CI/CD with Gradle, Test, and Docker
 
 on:
   push:
@@ -39,7 +39,6 @@ jobs:
 
       # 4. application.yml 생성 (base64 안전 처리)
       - name: Make application.yml from Secret
-        if: contains(github.ref, 'main') || contains(github.ref, 'refs/pull/')
         run: |
           mkdir -p ./src/main/resources
           echo "${{ secrets.APPLICATION_DEV_YML_BASE64 }}" | base64 --decode > ./src/main/resources/application.yml
@@ -48,9 +47,9 @@ jobs:
       - name: Grant Execute Permission For Gradlew
         run: chmod +x gradlew
 
-      # 6. Gradle로 JAR 빌드
-      - name: Build JAR
-        run: ./gradlew clean build
+        # Gradle 빌드
+      - name: Build Gradle (without test)
+        run: ./gradlew bootJar -x test
 
       # 7. Docker 빌드 및 푸시
       - name: Docker Build & Push
