@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  app:
+    image: yujin1219/decodeat-backend:latest
+    container_name: decodeat
+    restart: always
+    ports:
+      - "8080:8080"
+
