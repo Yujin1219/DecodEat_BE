@@ -24,6 +24,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.DecodEat.global.apiPayload.code.status.ErrorStatus.PRODUCT_NOT_EXISTED;
+import static com.DecodEat.global.apiPayload.code.status.ErrorStatus.PRODUCT_NUTRITION_NOT_EXISTED;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +41,7 @@ public class ProductService {
         List<ProductInfoImage> images = productImageRepository.findByProduct(product);
         List<String> imageUrls = images.stream().map(ProductInfoImage::getImageUrl).toList();
 
-        ProductNutrition productNutrition = productNutritionRepository.findById(id).orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
+        ProductNutrition productNutrition = productNutritionRepository.findById(id).orElseThrow(() -> new GeneralException(PRODUCT_NUTRITION_NOT_EXISTED));
 
         return ProductConverter.toProductDetailDto(product, imageUrls, productNutrition);
     }
