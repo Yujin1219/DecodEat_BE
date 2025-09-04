@@ -70,9 +70,10 @@ jobs:
           username: ${{ secrets.USERNAME }}
           port: 22
           script: |
-            docker rm -f $(docker ps -qa) || true
+            cd ~/app
+            docker rm -f decodeat || true
             docker pull ${{ secrets.DOCKER_USERNAME }}/decodeat-backend:latest
-            docker-compose up -d
+            docker-compose -f docker-compose.yml up -d --remove-orphans
             docker image prune -f
 
   # 9. 현재 시간 출력
