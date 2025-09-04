@@ -1,5 +1,5 @@
-# Java 21용 OpenJDK 이미지 사용
-FROM eclipse-temurin:21-jdk
+# Java 17용 OpenJDK 이미지 사용
+FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
