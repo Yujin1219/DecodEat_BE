@@ -53,12 +53,13 @@ public class WebOAuthSecurityConfig {
 
         // 3. 요청별 인가 규칙 설정
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/img/**", "/css/**", "/js/**", "/favicon.ico", "/error").permitAll()
-                .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll() // 토큰 재발급 요청은 누구나 가능
-                .requestMatchers("/api/token").permitAll()
-                .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN") // 유저 관련 API는 USER 또는 ADMIN 권한 필요
-                .requestMatchers("/api/admin/**").hasRole("ADMIN") // 어드민 관련 API는 ADMIN 권한만 가능
-                .anyRequest().authenticated()); // 나머지 요청은 인증 필요
+                .anyRequest().permitAll());
+//                .requestMatchers("/img/**", "/css/**", "/js/**", "/favicon.ico", "/error").permitAll()
+//                .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll() // 토큰 재발급 요청은 누구나 가능
+//                .requestMatchers("/api/token").permitAll()
+//                .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN") // 유저 관련 API는 USER 또는 ADMIN 권한 필요
+//                .requestMatchers("/api/admin/**").hasRole("ADMIN") // 어드민 관련 API는 ADMIN 권한만 가능
+//                .anyRequest().authenticated()); // 나머지 요청은 인증 필요
 
         // 4. OAuth2 로그인 설정
         http.oauth2Login(oauth2 -> oauth2
