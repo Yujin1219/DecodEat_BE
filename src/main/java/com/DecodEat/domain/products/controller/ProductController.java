@@ -3,6 +3,7 @@ package com.DecodEat.domain.products.controller;
 import com.DecodEat.domain.products.dto.response.ProductDetailDto;
 import com.DecodEat.domain.products.dto.request.ProductRegisterRequestDto;
 import com.DecodEat.domain.products.dto.response.ProductRegisterResponseDto;
+import com.DecodEat.domain.products.dto.response.ProductResponseDTO;
 import com.DecodEat.domain.products.service.ProductService;
 import com.DecodEat.domain.users.entity.User;
 import com.DecodEat.global.apiPayload.ApiResponse;
@@ -52,5 +53,15 @@ public class ProductController {
         return ApiResponse.onSuccess(productService.addProduct(user, requestDto, productImage, productInfoImages));
     }
 
+    @Operation(
+            summary = "홈화면 상품 추천 (최신순)",
+            description = "무한스크롤 방식으로 decode_status(분석 상태)가 COMPLETED인 상품만 최신순 정렬된 상품 목록을 조회합니다.\n" +
+                    "cursorId가 없으면 첫 페이지, 있으면 해당 ID보다 작은 상품들을 불러옵니다."
+    )
+    @GetMapping("/latest")
+    public ApiResponse<ProductResponseDTO.ProductListResultDTO> getProductList(
+            @RequestParam(required = false) Long cursorId) {
+        return ApiResponse.onSuccess(productService.getProducts(cursorId));
+    }
 
 }
