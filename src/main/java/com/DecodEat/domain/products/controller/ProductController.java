@@ -4,15 +4,22 @@ import com.DecodEat.domain.products.dto.response.ProductDetailDto;
 import com.DecodEat.domain.products.dto.request.ProductRegisterRequestDto;
 import com.DecodEat.domain.products.dto.response.ProductRegisterResponseDto;
 import com.DecodEat.domain.products.dto.response.ProductResponseDTO;
+import com.DecodEat.domain.products.dto.response.ProductSearchResponseDto;
+import com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory;
 import com.DecodEat.domain.products.service.ProductService;
 import com.DecodEat.domain.users.entity.User;
 import com.DecodEat.global.apiPayload.ApiResponse;
 import com.DecodEat.global.common.annotation.CurrentUser;
+import com.DecodEat.global.dto.PageResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,6 +69,29 @@ public class ProductController {
     public ApiResponse<ProductResponseDTO.ProductListResultDTO> getProductList(
             @RequestParam(required = false) Long cursorId) {
         return ApiResponse.onSuccess(productService.getProducts(cursorId));
+    }
+
+    @GetMapping("/search/autocomplete")
+    @Operation(summary = "상품 검색 및 필터링", description = "사용자가 입력한 상품명 키워드를 기반으로 자동완성용 상품 리스트를 최대 10개까지 반환합니다.")
+    public ApiResponse<List<ProductSearchResponseDto.SearchResultPrevDto>> searchProducts(
+            @Parameter(description = "검색할 상품명")
+            @RequestParam String productName) {
+
+        return ApiResponse.onSuccess(productService.searchProducts(productName));
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "상품 검색 및 필터링", description = "상품명과 원재료 카테고리로 상품을 검색하고 필터링합니다.")
+    public ApiResponse<PageResponseDto<ProductSearchResponseDto.ProductPrevDto>> searchProducts(
+            @Parameter(description = "검색할 상품명")
+            @RequestParam(required = false) String productName,
+            @Parameter(description = "필터링할 세부영양소 카테고리 리스트")
+            @RequestParam(required = false) List<RawMaterialCategory> categories,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by("productName").ascending()); // 0-based
+        return ApiResponse.onSuccess(productService.searchProducts(productName, categories, pageable));
     }
 
 }
