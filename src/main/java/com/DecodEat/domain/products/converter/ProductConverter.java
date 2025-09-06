@@ -2,9 +2,11 @@ package com.DecodEat.domain.products.converter;
 
 import com.DecodEat.domain.products.dto.response.ProductDetailDto;
 import com.DecodEat.domain.products.dto.response.ProductRegisterResponseDto;
+import com.DecodEat.domain.products.dto.response.ProductResponseDTO;
 import com.DecodEat.domain.products.entity.Product;
 import com.DecodEat.domain.products.entity.ProductNutrition;
 import com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory;
+import org.springframework.data.domain.Slice;
 
 import java.util.List;
 import java.util.Map;
@@ -61,6 +63,35 @@ public class ProductConverter {
                 .manufacturer(product.getManufacturer())
                 .productImage(product.getProductImage())
                 .productInfoImages(productInfoImageUrls)
+                .build();
+    }
+
+    // 단일 Product → ProductListItemDTO 변환
+    public static ProductResponseDTO.ProductListItemDTO toProductListItemDTO(Product product){
+        return ProductResponseDTO.ProductListItemDTO.builder()
+                .productId(product.getProductId())
+                .manufacturer(product.getManufacturer())
+                .productName(product.getProductName())
+                .productImage(product.getProductImage())
+                .build();
+    }
+
+    // Slice<Product> → ProductListResultDTO 변환
+    public static ProductResponseDTO.ProductListResultDTO toProductListResultDTO(Slice<Product> slice) {
+        List<ProductResponseDTO.ProductListItemDTO> productList = slice.getContent().stream()
+                .map(ProductConverter::toProductListItemDTO)
+                .toList();
+
+        Long nextCursorId = (slice.hasNext() && !productList.isEmpty())
+                ? productList.get(productList.size() - 1).getProductId()
+                : null;
+
+        return ProductResponseDTO.ProductListResultDTO.builder()
+                .productList(productList)
+                .productListSize(productList.size())
+                .isFirst(slice.isFirst())
+                .hasNext(slice.hasNext())
+                .nextCursorId(nextCursorId)
                 .build();
     }
 }

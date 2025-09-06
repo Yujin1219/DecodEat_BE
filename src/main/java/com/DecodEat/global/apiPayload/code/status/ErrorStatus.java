@@ -16,7 +16,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 상품
     PRODUCT_NOT_EXISTED(HttpStatus.NOT_FOUND,"PRODUCT_400","존재하지 않는 상품 입니다"),
-    PRODUCT_NUTRITION_NOT_EXISTED(HttpStatus.NOT_FOUND,"PRODUCT_401","분석이 완료되지 않은 상품입니다."),
+    PRODUCT_NUTRITION_NOT_EXISTED(HttpStatus.CONFLICT,"PRODUCT_401","분석이 완료되지 않은 상품입니다."),
 
     // 기본 에러
     _BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON_400", "잘못된 요청입니다."),

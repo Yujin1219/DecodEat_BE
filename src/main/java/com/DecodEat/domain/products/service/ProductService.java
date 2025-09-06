@@ -4,6 +4,7 @@ import com.DecodEat.domain.products.converter.ProductConverter;
 import com.DecodEat.domain.products.dto.request.ProductRegisterRequestDto;
 import com.DecodEat.domain.products.dto.response.ProductDetailDto;
 import com.DecodEat.domain.products.dto.response.ProductRegisterResponseDto;
+import com.DecodEat.domain.products.dto.response.ProductResponseDTO;
 import com.DecodEat.domain.products.entity.DecodeStatus;
 import com.DecodEat.domain.products.entity.Product;
 import com.DecodEat.domain.products.entity.ProductInfoImage;
@@ -15,6 +16,9 @@ import com.DecodEat.domain.users.entity.User;
 import com.DecodEat.global.aws.s3.AmazonS3Manager;
 import com.DecodEat.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +38,9 @@ public class ProductService {
     private final ProductImageRepository productImageRepository;
     private final ProductNutritionRepository productNutritionRepository;
     private final AmazonS3Manager amazonS3Manager;
+
+
+    private static final int PAGE_SIZE = 12;
 
     public ProductDetailDto getDetail(Long id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
@@ -83,5 +90,13 @@ public class ProductService {
         }
 
         return ProductConverter.toProductRegisterDto(savedProduct,productInfoImageUrls) ;
+    }
+
+    @Transactional(readOnly = true)
+    public ProductResponseDTO.ProductListResultDTO getProducts(Long cursorId) {
+        Pageable pageable = PageRequest.of(0, PAGE_SIZE);
+        Slice<Product> slice = productRepository.findCompletedProductsByCursor(cursorId, pageable);
+
+        return ProductConverter.toProductListResultDTO(slice);
     }
 }
