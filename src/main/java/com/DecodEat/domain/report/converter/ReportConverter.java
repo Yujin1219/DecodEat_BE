@@ -3,6 +3,7 @@ package com.DecodEat.domain.report.converter;
 import com.DecodEat.domain.products.entity.Product;
 import com.DecodEat.domain.report.dto.request.ProductNutritionUpdateRequestDto;
 import com.DecodEat.domain.report.dto.response.ReportResponseDto;
+import com.DecodEat.domain.report.entity.ImageReport;
 import com.DecodEat.domain.report.entity.NutritionReport;
 import com.DecodEat.domain.report.entity.ReportStatus;
 import com.DecodEat.domain.users.entity.User;
@@ -33,4 +34,14 @@ public class ReportConverter {
                 .transFat(requestDto.getTransFat())
                 .build();
     }
+
+    public static ImageReport toImageReport(Long reporterId, Product product, String imageUrl){
+        return ImageReport.builder()
+                .product(product)
+                .reporterId(reporterId)
+                .reportStatus(ReportStatus.IN_PROGRESS)
+                .imageUrl(imageUrl)
+                .build();
+    }
+
 }
