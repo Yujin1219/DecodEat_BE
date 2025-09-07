@@ -72,7 +72,7 @@ public class ProductController {
     }
 
     @GetMapping("/search/autocomplete")
-    @Operation(summary = "상품 검색 및 필터링", description = "사용자가 입력한 상품명 키워드를 기반으로 자동완성용 상품 리스트를 최대 10개까지 반환합니다.")
+    @Operation(summary = "상품 검색 자동완성", description = "사용자가 입력한 상품명 키워드를 기반으로 자동완성용 상품 리스트를 최대 10개까지 반환합니다.")
     public ApiResponse<List<ProductSearchResponseDto.SearchResultPrevDto>> searchProducts(
             @Parameter(description = "검색할 상품명")
             @RequestParam String productName) {

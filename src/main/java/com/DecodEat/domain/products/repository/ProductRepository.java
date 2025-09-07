@@ -1,5 +1,6 @@
 package com.DecodEat.domain.products.repository;
 
+import com.DecodEat.domain.products.entity.DecodeStatus;
 import com.DecodEat.domain.products.entity.Product;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -7,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
@@ -17,4 +20,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
             "ORDER BY p.productId DESC")
     Slice<Product> findCompletedProductsByCursor(@Param("cursorId") Long cursorId,
                                              Pageable pageable);
+
+    void deleteByDecodeStatusIn(List<DecodeStatus> statuses);
 }
