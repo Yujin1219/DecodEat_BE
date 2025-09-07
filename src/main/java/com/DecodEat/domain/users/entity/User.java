@@ -2,16 +2,14 @@ package com.DecodEat.domain.users.entity; // User 엔티티의 패키지 경로
 
 import com.DecodEat.global.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 
 @Entity
 @Getter
-@Builder
-@NoArgsConstructor
+@SuperBuilder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "users")
 public class User extends BaseEntity {
