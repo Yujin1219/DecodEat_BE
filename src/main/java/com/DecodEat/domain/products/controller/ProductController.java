@@ -1,10 +1,7 @@
 package com.DecodEat.domain.products.controller;
 
-import com.DecodEat.domain.products.dto.response.ProductDetailDto;
+import com.DecodEat.domain.products.dto.response.*;
 import com.DecodEat.domain.products.dto.request.ProductRegisterRequestDto;
-import com.DecodEat.domain.products.dto.response.ProductRegisterResponseDto;
-import com.DecodEat.domain.products.dto.response.ProductResponseDTO;
-import com.DecodEat.domain.products.dto.response.ProductSearchResponseDto;
 import com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory;
 import com.DecodEat.domain.products.service.ProductService;
 import com.DecodEat.domain.users.entity.User;
@@ -44,7 +41,8 @@ public class ProductController {
     @Operation(
             summary = "제품 등록",
             description = "상품 이미지, 제품명, 회사명으로 상품을 등록합니다")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //이 엔드포인트가 multipart/form-data 타입의 요청 본문을 소비(consume)한다는 것을 명확하게 선언
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    //이 엔드포인트가 multipart/form-data 타입의 요청 본문을 소비(consume)한다는 것을 명확하게 선언
     public ApiResponse<ProductRegisterResponseDto> registerProduct(
             @CurrentUser User user,
             @RequestParam("name") String name,
@@ -90,8 +88,20 @@ public class ProductController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size) {
 
-        Pageable pageable = PageRequest.of(page-1, size, Sort.by("productName").ascending()); // 0-based
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("productName").ascending()); // 0-based
         return ApiResponse.onSuccess(productService.searchProducts(productName, categories, pageable));
     }
+
+    @GetMapping("/register-history")
+    @Operation(summary = "나의 분석 요청 기록", description = "내가 등록한 상품의 분석 결과 목록입니다.")
+    public ApiResponse<PageResponseDto<ProductRegisterHistoryDto>> getRegisterHistory(@CurrentUser User user,
+                                                                                      @RequestParam(defaultValue = "1") int page,
+                                                                                      @RequestParam(defaultValue = "20") int size) {
+
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending()); // 0-based
+
+        return ApiResponse.onSuccess(productService.getRegisterHistory(user, pageable));
+    }
+
 
 }

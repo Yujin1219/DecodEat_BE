@@ -2,10 +2,7 @@ package com.DecodEat.domain.products.service;
 
 import com.DecodEat.domain.products.converter.ProductConverter;
 import com.DecodEat.domain.products.dto.request.ProductRegisterRequestDto;
-import com.DecodEat.domain.products.dto.response.ProductDetailDto;
-import com.DecodEat.domain.products.dto.response.ProductRegisterResponseDto;
-import com.DecodEat.domain.products.dto.response.ProductResponseDTO;
-import com.DecodEat.domain.products.dto.response.ProductSearchResponseDto;
+import com.DecodEat.domain.products.dto.response.*;
 import com.DecodEat.domain.products.entity.DecodeStatus;
 import com.DecodEat.domain.products.entity.Product;
 import com.DecodEat.domain.products.entity.ProductInfoImage;
@@ -142,6 +139,16 @@ public class ProductService {
         }
 
         Page<ProductSearchResponseDto.ProductPrevDto> result = pagedProducts.map(ProductConverter::toProductPrevDto);
+
+        return new PageResponseDto<>(result);
+    }
+
+    public PageResponseDto<ProductRegisterHistoryDto> getRegisterHistory(User user, Pageable pageable){
+
+        Long userId = user.getId();
+
+        Page<Product> pagedProducts = productRepository.findByUserId(userId, pageable);
+        Page<ProductRegisterHistoryDto> result = pagedProducts.map(ProductConverter::toProductRegisterHistoryDto);
 
         return new PageResponseDto<>(result);
     }
