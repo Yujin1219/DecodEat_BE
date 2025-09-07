@@ -103,5 +103,4 @@ public class ProductController {
         return ApiResponse.onSuccess(productService.getRegisterHistory(user, pageable));
     }
 
-
 }
