@@ -3,6 +3,7 @@ package com.DecodEat.domain.products.converter;
 import com.DecodEat.domain.products.dto.response.ProductDetailDto;
 import com.DecodEat.domain.products.dto.response.ProductRegisterResponseDto;
 import com.DecodEat.domain.products.dto.response.ProductResponseDTO;
+import com.DecodEat.domain.products.dto.response.ProductSearchResponseDto;
 import com.DecodEat.domain.products.entity.Product;
 import com.DecodEat.domain.products.entity.ProductNutrition;
 import com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory;
@@ -69,6 +70,23 @@ public class ProductConverter {
     // 단일 Product → ProductListItemDTO 변환
     public static ProductResponseDTO.ProductListItemDTO toProductListItemDTO(Product product){
         return ProductResponseDTO.ProductListItemDTO.builder()
+                .productId(product.getProductId())
+                .manufacturer(product.getManufacturer())
+                .productName(product.getProductName())
+                .productImage(product.getProductImage())
+                .build();
+    }
+
+
+    public static ProductSearchResponseDto.SearchResultPrevDto toSearchResultPrevDto(Product product){
+        return ProductSearchResponseDto.SearchResultPrevDto.builder()
+                .productId(product.getProductId())
+                .productName(product.getProductName())
+                .build();
+    }
+
+    public static ProductSearchResponseDto.ProductPrevDto toProductPrevDto(Product product){
+        return ProductSearchResponseDto.ProductPrevDto.builder()
                 .productId(product.getProductId())
                 .manufacturer(product.getManufacturer())
                 .productName(product.getProductName())

@@ -5,30 +5,35 @@ import com.DecodEat.domain.products.dto.request.ProductRegisterRequestDto;
 import com.DecodEat.domain.products.dto.response.ProductDetailDto;
 import com.DecodEat.domain.products.dto.response.ProductRegisterResponseDto;
 import com.DecodEat.domain.products.dto.response.ProductResponseDTO;
+import com.DecodEat.domain.products.dto.response.ProductSearchResponseDto;
 import com.DecodEat.domain.products.entity.DecodeStatus;
 import com.DecodEat.domain.products.entity.Product;
 import com.DecodEat.domain.products.entity.ProductInfoImage;
 import com.DecodEat.domain.products.entity.ProductNutrition;
+import com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory;
 import com.DecodEat.domain.products.repository.ProductImageRepository;
 import com.DecodEat.domain.products.repository.ProductNutritionRepository;
 import com.DecodEat.domain.products.repository.ProductRepository;
+import com.DecodEat.domain.products.repository.ProductSpecification;
 import com.DecodEat.domain.users.entity.User;
 import com.DecodEat.global.aws.s3.AmazonS3Manager;
+import com.DecodEat.global.dto.PageResponseDto;
 import com.DecodEat.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.DecodEat.global.apiPayload.code.status.ErrorStatus.PRODUCT_NOT_EXISTED;
-import static com.DecodEat.global.apiPayload.code.status.ErrorStatus.PRODUCT_NUTRITION_NOT_EXISTED;
+import static com.DecodEat.global.apiPayload.code.status.ErrorStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -89,7 +94,7 @@ public class ProductService {
             productInfoImageUrls = infoImages.stream().map(ProductInfoImage::getImageUrl).toList();
         }
 
-        return ProductConverter.toProductRegisterDto(savedProduct,productInfoImageUrls) ;
+        return ProductConverter.toProductRegisterDto(savedProduct, productInfoImageUrls);
     }
 
     @Transactional(readOnly = true)
@@ -98,5 +103,46 @@ public class ProductService {
         Slice<Product> slice = productRepository.findCompletedProductsByCursor(cursorId, pageable);
 
         return ProductConverter.toProductListResultDTO(slice);
+    }
+
+    public List<ProductSearchResponseDto.SearchResultPrevDto> searchProducts(String productName) {
+
+        Specification<Product> spec = Specification.where(null);
+
+        if (StringUtils.hasText(productName)) {
+            spec = spec.and(ProductSpecification.likeProductName(productName));
+        }
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("productName").ascending());
+
+        return productRepository.findAll(spec, pageable)
+                .stream()
+                .map(ProductConverter::toSearchResultPrevDto)
+                .toList();
+    }
+
+    public PageResponseDto<ProductSearchResponseDto.ProductPrevDto> searchProducts(String productName, List<RawMaterialCategory> categories, Pageable pageable) {
+        // Specification을 조합
+        Specification<Product> spec = Specification.where(null);
+
+        if (StringUtils.hasText(productName)) {
+            spec = spec.and(ProductSpecification.likeProductName(productName));
+        }
+
+        if (categories != null && !categories.isEmpty()) {
+            spec = spec.and(ProductSpecification.hasRawMaterialCategories(categories));
+        }
+
+        // Specification과 Pageable을 사용하여 데이터 조회
+        Page<Product> pagedProducts = productRepository.findAll(spec, pageable);
+
+
+        if (pageable.getPageNumber() >= pagedProducts.getTotalPages() && pagedProducts.getTotalPages() > 0) {
+            throw new GeneralException(PAGE_OUT_OF_RANGE);
+        }
+
+        Page<ProductSearchResponseDto.ProductPrevDto> result = pagedProducts.map(ProductConverter::toProductPrevDto);
+
+        return new PageResponseDto<>(result);
     }
 }

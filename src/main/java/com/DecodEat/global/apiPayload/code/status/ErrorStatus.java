@@ -18,6 +18,10 @@ public enum ErrorStatus implements BaseErrorCode {
     PRODUCT_NOT_EXISTED(HttpStatus.NOT_FOUND,"PRODUCT_400","존재하지 않는 상품 입니다"),
     PRODUCT_NUTRITION_NOT_EXISTED(HttpStatus.CONFLICT,"PRODUCT_401","분석이 완료되지 않은 상품입니다."),
 
+    // 검색
+    PAGE_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"SEARCH_400","요청한 페이지가 전체 페이지 수를 초과합니다."),
+    NO_RESULT(HttpStatus.NOT_FOUND,"SEARCH_401","검색 결과가 없습니다."),
+
     // 기본 에러
     _BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON_400", "잘못된 요청입니다."),
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON_401", "인증이 필요합니다."),
