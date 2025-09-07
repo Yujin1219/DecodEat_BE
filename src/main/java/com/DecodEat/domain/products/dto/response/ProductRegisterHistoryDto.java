@@ -1,6 +1,7 @@
 package com.DecodEat.domain.products.dto.response;
 
 import com.DecodEat.domain.products.entity.DecodeStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,11 +16,12 @@ public class ProductRegisterHistoryDto {
         private Long productId;
 
         @Schema(description = "상품 등록일", example = "2025-09-05")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDateTime registerDate;
 
         @Schema(description = "상품 이미지", example = "https://example.com/image.jpg")
         private String productImage;
 
-        @Schema(description = "뷴석 상태", example = "COMPLETED")
+        @Schema(description = "분석 상태", example = "COMPLETED")
         private DecodeStatus decodeStatus;
 }
