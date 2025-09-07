@@ -1,9 +1,7 @@
 package com.DecodEat.domain.products.converter;
 
-import com.DecodEat.domain.products.dto.response.ProductDetailDto;
-import com.DecodEat.domain.products.dto.response.ProductRegisterResponseDto;
-import com.DecodEat.domain.products.dto.response.ProductResponseDTO;
-import com.DecodEat.domain.products.dto.response.ProductSearchResponseDto;
+import com.DecodEat.domain.products.dto.request.ProductRegisterRequestDto;
+import com.DecodEat.domain.products.dto.response.*;
 import com.DecodEat.domain.products.entity.Product;
 import com.DecodEat.domain.products.entity.ProductNutrition;
 import com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory;
@@ -93,6 +91,16 @@ public class ProductConverter {
                 .productImage(product.getProductImage())
                 .build();
     }
+
+    public static ProductRegisterHistoryDto toProductRegisterHistoryDto(Product product){
+        return ProductRegisterHistoryDto.builder()
+                .productId(product.getProductId())
+                .registerDate(product.getCreatedAt())
+                .productImage(product.getProductImage())
+                .decodeStatus(product.getDecodeStatus())
+                .build();
+    }
+
 
     // Slice<Product> → ProductListResultDTO 변환
     public static ProductResponseDTO.ProductListResultDTO toProductListResultDTO(Slice<Product> slice) {

@@ -2,6 +2,8 @@ package com.DecodEat.domain.products.repository;
 
 import com.DecodEat.domain.products.entity.DecodeStatus;
 import com.DecodEat.domain.products.entity.Product;
+import com.DecodEat.domain.users.entity.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +24,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
                                              Pageable pageable);
 
     void deleteByDecodeStatusIn(List<DecodeStatus> statuses);
+
+    Page<Product> findByUserId(Long userId, Pageable pageable);
 }

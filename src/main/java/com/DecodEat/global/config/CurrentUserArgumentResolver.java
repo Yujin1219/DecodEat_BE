@@ -21,24 +21,19 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public boolean supportsParameter(org.springframework.core.MethodParameter parameter) {
         return parameter.getParameterAnnotation(CurrentUser.class) != null
-        && parameter.getParameterType().equals(com.DecodEat.domain.users.entity.User.class);
+                && parameter.getParameterType().equals(com.DecodEat.domain.users.entity.User.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        try {
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-            if (principal instanceof org.springframework.security.core.userdetails.User) {
-                org.springframework.security.core.userdetails.User springUser = (org.springframework.security.core.userdetails.User) principal;
-                Long userId = Long.valueOf(springUser.getUsername());
-                return userService.findById(userId); // userId로 User 엔티티를 찾아 반환
-            }
-        } catch (Exception e) {
-            // 예외 처리, 인증되지 않은 사용자의 경우 null 또는 예외를 던질 수 있습니다.
-            throw new GeneralException(ErrorStatus._UNAUTHORIZED);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof org.springframework.security.core.userdetails.User springUser) {
+            Long userId = Long.valueOf(springUser.getUsername());
+            return userService.findById(userId); // userId로 User 엔티티를 찾아 반환
         }
 
-        return null;
+        throw new GeneralException(ErrorStatus._UNAUTHORIZED);
     }
 }
