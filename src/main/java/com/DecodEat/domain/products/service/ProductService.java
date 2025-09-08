@@ -104,7 +104,7 @@ public class ProductService {
 
     public List<ProductSearchResponseDto.SearchResultPrevDto> searchProducts(String productName) {
 
-        Specification<Product> spec = Specification.where(null);
+        Specification<Product> spec = Specification.where(ProductSpecification.isCompleted());
 
         if (StringUtils.hasText(productName)) {
             spec = spec.and(ProductSpecification.likeProductName(productName));
@@ -120,7 +120,7 @@ public class ProductService {
 
     public PageResponseDto<ProductSearchResponseDto.ProductPrevDto> searchProducts(String productName, List<RawMaterialCategory> categories, Pageable pageable) {
         // Specification을 조합
-        Specification<Product> spec = Specification.where(null);
+        Specification<Product> spec = Specification.where(ProductSpecification.isCompleted());
 
         if (StringUtils.hasText(productName)) {
             spec = spec.and(ProductSpecification.likeProductName(productName));

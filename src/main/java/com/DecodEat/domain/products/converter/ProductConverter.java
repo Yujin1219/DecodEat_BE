@@ -72,6 +72,7 @@ public class ProductConverter {
                 .manufacturer(product.getManufacturer())
                 .productName(product.getProductName())
                 .productImage(product.getProductImage())
+                .decodeStatus(product.getDecodeStatus())
                 .build();
     }
 
