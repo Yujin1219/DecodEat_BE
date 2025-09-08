@@ -1,5 +1,6 @@
 package com.DecodEat.domain.products.repository;
 
+import com.DecodEat.domain.products.entity.DecodeStatus;
 import com.DecodEat.domain.products.entity.Product;
 import com.DecodEat.domain.products.entity.ProductNutrition;
 import com.DecodEat.domain.products.entity.ProductRawMaterial;
@@ -13,6 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductSpecification {
+    public static Specification<Product> isCompleted() {
+        return (root, query, cb) -> cb.equal(root.get("decodeStatus"), DecodeStatus.COMPLETED);
+    }
+
+
     // 상품 이름으로 검색
     public static Specification<Product> likeProductName(String productName) {
         return (root, query, criteriaBuilder) ->
