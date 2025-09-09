@@ -1,6 +1,6 @@
 package com.DecodEat.global.config;
 
-import com.DecodEat.domain.RefreshToken.repository.RefreshTokenRepository;
+import com.DecodEat.domain.refreshToken.repository.RefreshTokenRepository;
 import com.DecodEat.domain.users.service.UserService;
 import com.DecodEat.global.config.jwt.JwtTokenProvider;
 import com.DecodEat.global.config.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;

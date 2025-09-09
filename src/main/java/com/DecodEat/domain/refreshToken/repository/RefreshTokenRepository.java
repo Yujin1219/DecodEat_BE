@@ -1,6 +1,6 @@
-package com.DecodEat.domain.RefreshToken.repository;
+package com.DecodEat.domain.refreshToken.repository;
 
-import com.DecodEat.domain.RefreshToken.entity.RefreshToken;
+import com.DecodEat.domain.refreshToken.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

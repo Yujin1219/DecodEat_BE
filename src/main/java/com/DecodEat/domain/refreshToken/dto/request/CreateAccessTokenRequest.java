@@ -1,4 +1,4 @@
-package com.DecodEat.domain.RefreshToken.dto.request;
+package com.DecodEat.domain.refreshToken.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
