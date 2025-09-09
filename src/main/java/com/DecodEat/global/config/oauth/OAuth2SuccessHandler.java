@@ -24,6 +24,7 @@ import java.util.Map;
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
+    public static final String ACCESS_TOKEN_COOKIE_NAME = "access_token";
     public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(14);
     public static final Duration ACCESS_TOKEN_DURATION = Duration.ofHours(1);
     public static final String REDIRECT_PATH = "/oauth2/redirect"; // 프론트엔드로 리다이렉트할 경로
@@ -48,8 +49,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         saveRefreshToken(user.getId(), refreshToken);
         addRefreshTokenToCookie(request, response, refreshToken);
 
-        // 2. 액세스 토큰 생성 -> 리다이렉트 경로에 파라미터로 추가
+        // 2. 액세스 토큰 생성
         String accessToken = tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
+        addAccessTokenToCookie(request, response, accessToken);
+
         String targetUrl = getTargetUrl(accessToken);
 
         // 3. 인증 관련 설정값, 쿠키 제거
@@ -68,6 +71,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshTokenRepository.save(refreshToken);
     }
 
+    private void addAccessTokenToCookie(HttpServletRequest request, HttpServletResponse response, String accessToken) {
+        int cookieMaxAge = (int) ACCESS_TOKEN_DURATION.toSeconds();
+        CookieUtil.deleteCookie(request, response, ACCESS_TOKEN_COOKIE_NAME);
+        CookieUtil.addCookie(response, ACCESS_TOKEN_COOKIE_NAME, accessToken, cookieMaxAge);
+    }
+
+
+
     // 생성된 리프레시 토큰을 쿠키에 저장
     private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
         int cookieMaxAge = (int) REFRESH_TOKEN_DURATION.toSeconds();
@@ -83,8 +94,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     // 액세스 토큰을 리다이렉트 경로에 파라미터로 추가
     private String getTargetUrl(String token) {
-        return UriComponentsBuilder.fromUriString("/decodeat.netlify.app") //todo:로그인 후 스웨거화면
-                .queryParam("token", token)
+        return UriComponentsBuilder.fromUriString("decodeat.netlify.app") //todo:로그인 후 스웨거화면
                 .build()
                 .toUriString();
     }
