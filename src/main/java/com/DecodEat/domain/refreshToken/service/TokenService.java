@@ -18,7 +18,7 @@ import java.time.Duration;
 public class TokenService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final com.DecodEat.domain.RefreshToken.service.RefreshTokenService refreshTokenService;
+    private final RefreshTokenService refreshTokenService;
     private final UserService userService;
 
     public String createNewAccessToken(String refreshToken){

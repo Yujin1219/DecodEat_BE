@@ -1,4 +1,4 @@
-package com.DecodEat.domain.RefreshToken.dto.response;
+package com.DecodEat.domain.refreshToken.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
