@@ -1,4 +1,4 @@
-package com.DecodEat.domain.RefreshToken.service;
+package com.DecodEat.domain.refreshToken.service;
 
 
 import static com.DecodEat.global.apiPayload.code.status.ErrorStatus.*;
@@ -10,6 +10,7 @@ import com.DecodEat.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+
 import java.time.Duration;
 
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ import java.time.Duration;
 public class TokenService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenService refreshTokenService;
+    private final com.DecodEat.domain.RefreshToken.service.RefreshTokenService refreshTokenService;
     private final UserService userService;
 
     public String createNewAccessToken(String refreshToken){
