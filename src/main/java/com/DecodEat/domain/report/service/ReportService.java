@@ -6,6 +6,8 @@ import com.DecodEat.domain.report.converter.ReportConverter;
 import com.DecodEat.domain.report.dto.request.ProductNutritionUpdateRequestDto;
 import com.DecodEat.domain.report.dto.response.ReportResponseDto;
 import com.DecodEat.domain.report.entity.ReportRecord;
+import com.DecodEat.domain.report.entity.ReportStatus;
+import com.DecodEat.domain.report.entity.ReportRecord;
 import com.DecodEat.domain.report.repository.ImageReportRepository;
 import com.DecodEat.domain.report.repository.NutritionReportRepository;
 import com.DecodEat.domain.report.repository.ReportRecordRepository;
@@ -55,4 +57,20 @@ public class ReportService {
         return ReportConverter.toReportListResponseDTO(reportPage);
     }
 
+    /**
+     * 상품 수정 신고 요청 거절
+     * @param reportId 거절할 신고의 ID
+     * @return 처리 결과를 담은 DTO
+     */
+    public ReportResponseDto rejectReport(Long reportId){
+        // 1. ID로 신고 내역 조회
+        ReportRecord reportRecord = reportRecordRepository.findById(reportId)
+                .orElseThrow(() -> new GeneralException(REPORT_NOT_FOUND));
+
+        // 2. reportstatus 상태를 rejected로 변경
+        reportRecord.setReportStatus(ReportStatus.REJECTED);
+
+        // 3. DTO 반환
+        return ReportConverter.toReportResponseDto(reportRecord.getProduct().getProductId(), "신고 요청이 거절 처리되었습니다.");
+    }
 }

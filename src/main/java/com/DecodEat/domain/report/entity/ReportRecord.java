@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
+@Setter
 @SuperBuilder // 자식 클래스에서 부모 클래스 필드까지 빌드(컴파일 시점에) <-> @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 서비스 코드 등 다른 곳에서 의미 없는 빈 객체를 실수로 생성하는 것 예방
