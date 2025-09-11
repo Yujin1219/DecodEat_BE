@@ -7,6 +7,7 @@ import com.DecodEat.domain.report.dto.request.ProductNutritionUpdateRequestDto;
 import com.DecodEat.domain.report.dto.response.ReportResponseDto;
 import com.DecodEat.domain.report.entity.ReportRecord;
 import com.DecodEat.domain.report.entity.ReportStatus;
+import com.DecodEat.domain.report.entity.ReportRecord;
 import com.DecodEat.domain.report.repository.ImageReportRepository;
 import com.DecodEat.domain.report.repository.NutritionReportRepository;
 import com.DecodEat.domain.report.repository.ReportRecordRepository;
