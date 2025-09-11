@@ -1,8 +1,8 @@
 package com.DecodEat.domain.refreshToken.controller;
 
-import com.DecodEat.domain.RefreshToken.dto.request.CreateAccessTokenRequest;
-import com.DecodEat.domain.RefreshToken.dto.response.CreateAccessTokenResponse;
-import com.DecodEat.domain.RefreshToken.service.TokenService;
+import com.DecodEat.domain.refreshToken.dto.request.CreateAccessTokenRequest;
+import com.DecodEat.domain.refreshToken.dto.response.CreateAccessTokenResponse;
+import com.DecodEat.domain.refreshToken.service.TokenService;
 import com.DecodEat.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

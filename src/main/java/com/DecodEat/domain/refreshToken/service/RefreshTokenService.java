@@ -1,7 +1,7 @@
-package com.DecodEat.domain.RefreshToken.service;
+package com.DecodEat.domain.refreshToken.service;
 
-import com.DecodEat.domain.RefreshToken.entity.RefreshToken;
-import com.DecodEat.domain.RefreshToken.repository.RefreshTokenRepository;
+import com.DecodEat.domain.refreshToken.entity.RefreshToken;
+import com.DecodEat.domain.refreshToken.repository.RefreshTokenRepository;
 import com.DecodEat.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

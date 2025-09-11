@@ -1,4 +1,4 @@
-package com.DecodEat.domain.RefreshToken.entity;
+package com.DecodEat.domain.refreshToken.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

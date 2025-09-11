@@ -1,26 +1,24 @@
 package com.DecodEat.global.config;
 
-import com.DecodEat.domain.RefreshToken.repository.RefreshTokenRepository;
+import com.DecodEat.domain.refreshToken.repository.RefreshTokenRepository;
 import com.DecodEat.domain.users.service.UserService;
 import com.DecodEat.global.config.jwt.JwtTokenProvider;
 import com.DecodEat.global.config.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.DecodEat.global.config.oauth.OAuth2SuccessHandler;
 import com.DecodEat.global.config.oauth.OAuth2UserCustomService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.TokenExchangeOAuth2AuthorizedClientProvider;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.beans.factory.annotation.Value;
 
 @RequiredArgsConstructor
 @Configuration
@@ -31,6 +29,8 @@ public class WebOAuthSecurityConfig {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
     private final CorsConfigurationSource corsConfigurationSource; // CorsCongifuragtinoSource Bean 주입 위함
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    private String kakaoClientId;
 
 //    @Bean
 //    public WebSecurityCustomizer configure() {
@@ -77,6 +77,15 @@ public class WebOAuthSecurityConfig {
                 .defaultAuthenticationEntryPointFor(
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
                         new AntPathRequestMatcher("/api/**")));
+        // 7. 로그아웃
+        http.logout(logout -> logout
+                .logoutUrl("/api/logout")
+                // 👇 카카오 로그아웃 URL로 리다이렉트
+                .logoutSuccessUrl("https://kauth.kakao.com/oauth/logout?client_id=" + kakaoClientId + "&logout_redirect_uri=https://decodeat.store.app/")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .clearAuthentication(true)
+        );
 
         return http.build();
     }
