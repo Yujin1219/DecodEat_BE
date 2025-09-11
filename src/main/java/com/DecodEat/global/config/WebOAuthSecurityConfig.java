@@ -81,7 +81,7 @@ public class WebOAuthSecurityConfig {
         http.logout(logout -> logout
                 .logoutUrl("/api/logout")
                 // 👇 카카오 로그아웃 URL로 리다이렉트
-                .logoutSuccessUrl("https://kauth.kakao.com/oauth/logout?client_id=" + kakaoClientId + "&logout_redirect_uri=https://decodeat.store.app/")
+                .logoutSuccessUrl("https://kauth.kakao.com/oauth/logout?client_id=" + kakaoClientId + "&logout_redirect_uri=https://decodeat.store/")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .clearAuthentication(true)
