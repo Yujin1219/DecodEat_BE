@@ -36,7 +36,10 @@ public enum ErrorStatus implements BaseErrorCode {
     DUPLICATE_UNIQUE_KEY(HttpStatus.CONFLICT, "COMMON_005", "이미 처리된 요청입니다."),
 
     // s3 사진 첨부 에러
-    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_001", "파일 업로드에 실패했습니다.");
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_001", "파일 업로드에 실패했습니다."),
+
+    // 신고
+    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPONT_401", "존재하지 않는 신고 내역 입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
