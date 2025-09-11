@@ -8,9 +8,13 @@ import com.DecodEat.domain.users.entity.User;
 import com.DecodEat.global.apiPayload.ApiResponse;
 import com.DecodEat.global.common.annotation.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,5 +44,19 @@ public class ReportController {
                                                      @RequestParam String imageUrl) {
 
         return ApiResponse.onSuccess(reportService.requestCheckImage(user, productId, imageUrl));
+    }
+    @Operation(
+            summary = "상품 수정 요청 조회 (관리자)",
+            description = "관리자가 모든 상품 정보 수정 요청을 페이지별로 조회합니다. 영양 정보 수정과 이미지 확인 요청을 모두 포함합니다.")
+    @Parameters({
+            @Parameter(name = "page", description = "페이지 번호, 0부터 시작합니다.", example = "0"),
+            @Parameter(name = "size", description = "한 페이지에 보여줄 항목 수", example = "10")
+    })
+    @GetMapping
+    public ApiResponse<ReportResponseDto.ReportListResponseDTO> getReports(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ApiResponse.onSuccess(reportService.getReports(page, size));
     }
 }
