@@ -83,7 +83,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     // 액세스 토큰을 리다이렉트 경로에 파라미터로 추가
     private String getTargetUrl(String token) {
-        return UriComponentsBuilder.fromUriString("/decodeat.netlify.app") //todo:로그인 후 스웨거화면
+        return UriComponentsBuilder.fromUriString("/decodeat.store") //todo:로그인 후 스웨거화면
                 .queryParam("token", token)
                 .build()
                 .toUriString();
