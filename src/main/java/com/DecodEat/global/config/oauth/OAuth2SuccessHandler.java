@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
 
@@ -51,7 +53,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 2. 액세스 토큰 생성
         String accessToken = tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
-        addAccessTokenToCookie(request, response, accessToken);
 
         String targetUrl = getTargetUrl(accessToken);
 
@@ -71,14 +72,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshTokenRepository.save(refreshToken);
     }
 
-    private void addAccessTokenToCookie(HttpServletRequest request, HttpServletResponse response, String accessToken) {
-        int cookieMaxAge = (int) ACCESS_TOKEN_DURATION.toSeconds();
-        CookieUtil.deleteCookie(request, response, ACCESS_TOKEN_COOKIE_NAME);
-        CookieUtil.addCookie(response, ACCESS_TOKEN_COOKIE_NAME, accessToken, cookieMaxAge);
-    }
-
-
-
     // 생성된 리프레시 토큰을 쿠키에 저장
     private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
         int cookieMaxAge = (int) REFRESH_TOKEN_DURATION.toSeconds();
@@ -94,9 +87,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     // 액세스 토큰을 리다이렉트 경로에 파라미터로 추가
     private String getTargetUrl(String token) {
-        return UriComponentsBuilder.fromUriString("/decodeat.store") //todo:로그인 후 스웨거화면
-                .queryParam("token", token)
+        return UriComponentsBuilder.fromUriString("https://decodeat.netlify.app")
+                .queryParam("access_token", token)
                 .build()
                 .toUriString();
     }
+
+
 }

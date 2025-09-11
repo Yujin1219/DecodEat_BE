@@ -5,6 +5,7 @@ import com.DecodEat.domain.refreshToken.dto.response.CreateAccessTokenResponse;
 import com.DecodEat.domain.refreshToken.service.TokenService;
 import com.DecodEat.global.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,11 +18,8 @@ public class TokenController {
 
     @PostMapping("/api/token")
     @Operation(summary = "액세스 토큰 재발급 API")
-    public ApiResponse<CreateAccessTokenResponse> createAccessToken(@RequestBody CreateAccessTokenRequest request){
+    public ApiResponse<String> createAccessToken(HttpServletRequest request){
 
-        String refreshToken = request.getRefreshToken();
-        String newAccessToken = tokenService.createNewAccessToken(refreshToken);
-
-        return ApiResponse.onSuccess(new CreateAccessTokenResponse(newAccessToken));
+        return ApiResponse.onSuccess(tokenService.refreshAccessToken(request));
     }
 }
