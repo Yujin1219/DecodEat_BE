@@ -62,7 +62,7 @@ public class ProductService {
         List<ProductInfoImage> images = productImageRepository.findByProduct(product);
         List<String> imageUrls = images.stream().map(ProductInfoImage::getImageUrl).toList();
 
-        ProductNutrition productNutrition = productNutritionRepository.findById(id).orElseThrow(() -> new GeneralException(PRODUCT_NUTRITION_NOT_EXISTED));
+        ProductNutrition productNutrition = productNutritionRepository.findByProduct(product).orElseThrow(() -> new GeneralException(PRODUCT_NUTRITION_NOT_EXISTED));
 
         return ProductConverter.toProductDetailDto(product, imageUrls, productNutrition);
     }
