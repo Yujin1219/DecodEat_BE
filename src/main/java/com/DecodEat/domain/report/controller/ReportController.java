@@ -8,9 +8,13 @@ import com.DecodEat.domain.users.entity.User;
 import com.DecodEat.global.apiPayload.ApiResponse;
 import com.DecodEat.global.common.annotation.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,4 +45,5 @@ public class ReportController {
 
         return ApiResponse.onSuccess(reportService.requestCheckImage(user, productId, imageUrl));
     }
+
 }
