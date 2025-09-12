@@ -1,24 +1,32 @@
 package com.DecodEat.domain.products.service;
 
+import com.DecodEat.domain.products.client.PythonAnalysisClient;
 import com.DecodEat.domain.products.converter.ProductConverter;
+import com.DecodEat.domain.products.dto.request.AnalysisRequestDto;
 import com.DecodEat.domain.products.dto.request.ProductRegisterRequestDto;
 import com.DecodEat.domain.products.dto.response.*;
 import com.DecodEat.domain.products.entity.DecodeStatus;
 import com.DecodEat.domain.products.entity.Product;
 import com.DecodEat.domain.products.entity.ProductInfoImage;
 import com.DecodEat.domain.products.entity.ProductNutrition;
+import com.DecodEat.domain.products.entity.ProductRawMaterial;
+import com.DecodEat.domain.products.entity.RawMaterial.RawMaterial;
 import com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory;
 import com.DecodEat.domain.products.repository.ProductImageRepository;
 import com.DecodEat.domain.products.repository.ProductNutritionRepository;
+import com.DecodEat.domain.products.repository.ProductRawMaterialRepository;
 import com.DecodEat.domain.products.repository.ProductRepository;
+import com.DecodEat.domain.products.repository.RawMaterialRepository;
 import com.DecodEat.domain.products.repository.ProductSpecification;
 import com.DecodEat.domain.users.entity.User;
 import com.DecodEat.global.aws.s3.AmazonS3Manager;
 import com.DecodEat.global.dto.PageResponseDto;
 import com.DecodEat.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -35,11 +43,15 @@ import static com.DecodEat.global.apiPayload.code.status.ErrorStatus.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
     private final ProductNutritionRepository productNutritionRepository;
+    private final RawMaterialRepository rawMaterialRepository;
+    private final ProductRawMaterialRepository productRawMaterialRepository;
     private final AmazonS3Manager amazonS3Manager;
+    private final PythonAnalysisClient pythonAnalysisClient;
 
 
     private static final int PAGE_SIZE = 12;
@@ -90,6 +102,9 @@ public class ProductService {
 
             productInfoImageUrls = infoImages.stream().map(ProductInfoImage::getImageUrl).toList();
         }
+
+        // 파이썬 서버에 비동기로 분석 요청
+        requestAnalysisAsync(savedProduct.getProductId(), productInfoImageUrls);
 
         return ProductConverter.toProductRegisterDto(savedProduct, productInfoImageUrls);
     }
@@ -151,5 +166,155 @@ public class ProductService {
         Page<ProductRegisterHistoryDto> result = pagedProducts.map(ProductConverter::toProductRegisterHistoryDto);
 
         return new PageResponseDto<>(result);
+    }
+
+    @Async
+    public void requestAnalysisAsync(Long productId, List<String> imageUrls) {
+        log.info("Starting async analysis for product ID: {}", productId);
+        
+        if (imageUrls == null || imageUrls.isEmpty()) {
+            log.warn("No images to analyze for product ID: {}", productId);
+            updateProductStatus(productId, DecodeStatus.FAILED, "No images provided for analysis");
+            return;
+        }
+
+        try {
+            AnalysisRequestDto request = AnalysisRequestDto.builder()
+                    .image_urls(imageUrls)
+                    .build();
+
+            pythonAnalysisClient.analyzeProduct(request)
+                    .subscribe(
+                            response -> processAnalysisResult(productId, response),
+                            error -> {
+                                log.error("Analysis failed for product ID: {}", productId, error);
+                                updateProductStatus(productId, DecodeStatus.FAILED, "Analysis request failed: " + error.getMessage());
+                            }
+                    );
+        } catch (Exception e) {
+            log.error("Failed to send analysis request for product ID: {}", productId, e);
+            updateProductStatus(productId, DecodeStatus.FAILED, "Failed to send analysis request");
+        }
+    }
+
+    @Transactional
+    public void processAnalysisResult(Long productId, AnalysisResponseDto response) {
+        log.info("Processing analysis result for product ID: {} with status: {}", productId, response.getDecodeStatus());
+        
+        try {
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
+
+            // 상품 상태 업데이트
+            product.setDecodeStatus(response.getDecodeStatus());
+            productRepository.save(product);
+
+            // 분석이 성공한 경우 영양정보 저장
+            if (response.getDecodeStatus() == DecodeStatus.COMPLETED && response.getNutrition_info() != null) {
+                saveNutritionInfo(productId, response);
+            }
+
+            log.info("Successfully processed analysis result for product ID: {}", productId);
+        } catch (Exception e) {
+            log.error("Failed to process analysis result for product ID: {}", productId, e);
+            updateProductStatus(productId, DecodeStatus.FAILED, "Failed to process analysis result");
+        }
+    }
+
+    @Transactional
+    public void updateProductStatus(Long productId, DecodeStatus status, String message) {
+        try {
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
+            
+            product.setDecodeStatus(status);
+            productRepository.save(product);
+            
+            log.info("Updated product ID: {} status to: {} - {}", productId, status, message);
+        } catch (Exception e) {
+            log.error("Failed to update product status for ID: {}", productId, e);
+        }
+    }
+
+    private void saveNutritionInfo(Long productId, AnalysisResponseDto response) {
+        log.info("Saving nutrition info for product ID: {}", productId);
+        
+        try {
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
+
+            // 영양정보 저장
+            if (response.getNutrition_info() != null) {
+                ProductNutrition nutrition = ProductNutrition.builder()
+                        .product(product)
+                        .calcium(parseDouble(response.getNutrition_info().getCalcium()))
+                        .carbohydrate(parseDouble(response.getNutrition_info().getCarbohydrate()))
+                        .cholesterol(parseDouble(response.getNutrition_info().getCholesterol()))
+                        .dietaryFiber(parseDouble(response.getNutrition_info().getDietary_fiber()))
+                        .energy(parseDouble(response.getNutrition_info().getEnergy()))
+                        .fat(parseDouble(response.getNutrition_info().getFat()))
+                        .protein(parseDouble(response.getNutrition_info().getProtein()))
+                        .satFat(parseDouble(response.getNutrition_info().getSat_fat()))
+                        .sodium(parseDouble(response.getNutrition_info().getSodium()))
+                        .sugar(parseDouble(response.getNutrition_info().getSugar()))
+                        .transFat(parseDouble(response.getNutrition_info().getTrans_fat()))
+                        .build();
+                
+                productNutritionRepository.save(nutrition);
+                log.info("Saved nutrition info for product ID: {}", productId);
+            }
+
+            // 원재료 정보 저장
+            if (response.getIngredients() != null && !response.getIngredients().isEmpty()) {
+                saveIngredients(product, response.getIngredients());
+                log.info("Saved {} ingredients for product ID: {}", response.getIngredients().size(), productId);
+            }
+
+        } catch (Exception e) {
+            log.error("Failed to save nutrition info for product ID: {}", productId, e);
+            throw e;
+        }
+    }
+
+    private void saveIngredients(Product product, List<String> ingredientNames) {
+        // 기존 원재료 관계 삭제
+        productRawMaterialRepository.deleteByProduct(product);
+
+        for (String ingredientName : ingredientNames) {
+            if (ingredientName != null && !ingredientName.trim().isEmpty()) {
+                // 원재료가 이미 존재하는지 확인
+                RawMaterial rawMaterial = rawMaterialRepository.findByName(ingredientName.trim())
+                        .orElseGet(() -> {
+                            // 새로운 원재료 생성 (기본 카테고리는 OTHERS)
+                            RawMaterial newRawMaterial = RawMaterial.builder()
+                                    .name(ingredientName.trim())
+                                    .category(RawMaterialCategory.OTHERS)
+                                    .build();
+                            return rawMaterialRepository.save(newRawMaterial);
+                        });
+
+                // 상품-원재료 관계 생성
+                ProductRawMaterial productRawMaterial = ProductRawMaterial.builder()
+                        .product(product)
+                        .rawMaterial(rawMaterial)
+                        .build();
+                
+                productRawMaterialRepository.save(productRawMaterial);
+            }
+        }
+    }
+
+    private Double parseDouble(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            // 숫자가 아닌 문자 제거 (단위 등)
+            String cleanValue = value.replaceAll("[^0-9.]", "");
+            return cleanValue.isEmpty() ? null : Double.parseDouble(cleanValue);
+        } catch (NumberFormatException e) {
+            log.warn("Failed to parse double value: {}", value);
+            return null;
+        }
     }
 }

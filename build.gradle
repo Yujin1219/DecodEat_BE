@@ -52,6 +52,9 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 	// S3 설정
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.649'
+	
+	// HTTP 클라이언트 (파이썬 서버 통신용)
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {
