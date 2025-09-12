@@ -142,7 +142,7 @@ public class ProductService {
         }
 
         if (categories != null && !categories.isEmpty()) {
-            spec = spec.and(ProductSpecification.hasRawMaterialCategories(categories));
+            spec = spec.and(ProductSpecification.hasAllRawMaterialCategories(categories));
         }
 
         // Specification과 Pageable을 사용하여 데이터 조회
