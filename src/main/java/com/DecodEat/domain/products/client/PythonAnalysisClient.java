@@ -18,7 +18,7 @@ public class PythonAnalysisClient {
 
     private final WebClient webClient;
 
-    @Value("${python.server.url:http://localhost:8000}")
+    @Value("${python.server.url:http://3.37.218.215:8000/}")
     private String pythonServerUrl;
 
     public Mono<AnalysisResponseDto> analyzeProduct(AnalysisRequestDto request) {
