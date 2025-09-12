@@ -43,4 +43,17 @@ public class AdminReportController {
     public ApiResponse<ReportResponseDto> rejectReport(@PathVariable Long reportId) {
         return ApiResponse.onSuccess(reportService.rejectReport(reportId));
     }
+
+    @Operation(
+            summary = "상품 수정 요청 수락 (관리자)",
+            description = """
+                    관리자가 상품 정보 수정 요청을 수락합니다. 해당 신고 내역의 상태를 ACCEPTED로 변경합니다.
+                    - **영양 정보 신고 수락 시:** 실제 상품의 영양 정보가 신고된 내용으로 업데이트됩니다.
+                    - **부적절 이미지 신고 수락 시:** 해당 상품이 데이터베이스에서 삭제됩니다.""")
+    @Parameter(name = "reportId", description = "수럭할 신고의 ID", example = "1")
+    // @PreAuthorize("hasRole('ADMIN')") // Spring Security 사용 시 권한 설정
+    @PatchMapping("/{reportId}/accept")
+    public ApiResponse<ReportResponseDto> acceptReport(@PathVariable Long reportId) {
+        return ApiResponse.onSuccess(reportService.acceptReport(reportId));
+    }
 }

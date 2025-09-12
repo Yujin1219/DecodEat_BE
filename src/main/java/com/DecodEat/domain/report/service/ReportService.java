@@ -5,8 +5,7 @@ import com.DecodEat.domain.products.repository.ProductRepository;
 import com.DecodEat.domain.report.converter.ReportConverter;
 import com.DecodEat.domain.report.dto.request.ProductNutritionUpdateRequestDto;
 import com.DecodEat.domain.report.dto.response.ReportResponseDto;
-import com.DecodEat.domain.report.entity.ReportRecord;
-import com.DecodEat.domain.report.entity.ReportStatus;
+import com.DecodEat.domain.report.entity.*;
 import com.DecodEat.domain.report.entity.ReportRecord;
 import com.DecodEat.domain.report.repository.ImageReportRepository;
 import com.DecodEat.domain.report.repository.NutritionReportRepository;
@@ -71,6 +70,34 @@ public class ReportService {
         reportRecord.setReportStatus(ReportStatus.REJECTED);
 
         // 3. DTO 반환
+        return ReportConverter.toReportResponseDto(reportRecord.getProduct().getProductId(), "신고 요청이 거절 처리되었습니다.");
+    }
+
+
+    /**
+     * 상품 수정 신고 요청 수락
+     * @param reportId 수락할 신고의 ID
+     * @return 처리 결과를 담은 DTO
+     */
+    public ReportResponseDto acceptReport(Long reportId){
+        // 1. ID로 신고 내역 조회
+        ReportRecord reportRecord = reportRecordRepository.findById(reportId)
+                .orElseThrow(() -> new GeneralException(REPORT_NOT_FOUND));
+
+        // 2. 이미 처리된 내역인지 확인
+
+        Product product = reportRecord.getProduct();
+        if (reportRecord instanceof NutritionReport) {
+            NutritionReport nutritionReport = (NutritionReport) reportRecord;
+//            product.updateNutrition(nutritionReport);
+        } else if (reportRecord instanceof ImageReport) {
+            productRepository.delete(product);
+        }
+
+        // 3. reportstatus 상태를 rejected로 변경
+        reportRecord.setReportStatus(ReportStatus.ACCEPTED);
+
+        // 4. DTO 반환
         return ReportConverter.toReportResponseDto(reportRecord.getProduct().getProductId(), "신고 요청이 거절 처리되었습니다.");
     }
 }

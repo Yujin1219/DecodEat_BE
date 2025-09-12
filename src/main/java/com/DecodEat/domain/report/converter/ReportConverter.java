@@ -1,6 +1,8 @@
 package com.DecodEat.domain.report.converter;
 
 import com.DecodEat.domain.products.entity.Product;
+import com.DecodEat.domain.products.entity.ProductInfoImage;
+import com.DecodEat.domain.products.entity.ProductNutrition;
 import com.DecodEat.domain.report.dto.request.ProductNutritionUpdateRequestDto;
 import com.DecodEat.domain.report.dto.response.ReportResponseDto;
 import com.DecodEat.domain.report.entity.ImageReport;
@@ -10,6 +12,7 @@ import com.DecodEat.domain.report.entity.ReportStatus;
 import com.DecodEat.domain.users.entity.User;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ReportConverter {
@@ -65,12 +68,50 @@ public class ReportConverter {
                 .build();
     }
 
+    public static ReportResponseDto.SimpleProductInfoDTO toSimpleProductInfoDTO(Product product) {
+        List<String> infoImageUrls = product.getInfoImages().stream()
+                .map(ProductInfoImage::getImageUrl)
+                .collect(Collectors.toList());
+
+        return ReportResponseDto.SimpleProductInfoDTO.builder()
+                .productId(product.getProductId())
+                .productName(product.getProductName())
+                .manufacturer(product.getManufacturer())
+                .productImage(product.getProductImage())
+                .infoImageUrls(infoImageUrls)
+                .build();
+    }
+    public static ReportResponseDto.ProductNutritionInfoDTO toProductNutritionInfoDTO(ProductNutrition nutrition) {
+        // 상품에 아직 영양 정보가 등록되지 않은 경우
+        if (nutrition == null) {
+            return null;
+        }
+
+        return ReportResponseDto.ProductNutritionInfoDTO.builder()
+                .calcium(nutrition.getCalcium())
+                .carbohydrate(nutrition.getCarbohydrate())
+                .cholesterol(nutrition.getCholesterol())
+                .dietaryFiber(nutrition.getDietaryFiber())
+                .energy(nutrition.getEnergy())
+                .fat(nutrition.getFat())
+                .protein(nutrition.getProtein())
+                .satFat(nutrition.getSatFat())
+                .sodium(nutrition.getSodium())
+                .sugar(nutrition.getSugar())
+                .transFat(nutrition.getTransFat())
+                .build();
+    }
+
     public static ReportResponseDto.ReportListItemDTO toReportListItemDTO(ReportRecord reportRecord){
+
+        Product product = reportRecord.getProduct();
+        ProductNutrition currentNutrition = product.getProductNutrition();
+
         ReportResponseDto.ReportListItemDTO.ReportListItemDTOBuilder builder = ReportResponseDto.ReportListItemDTO.builder()
                 .reportId(reportRecord.getId())
                 .reporterId(reportRecord.getReporterId())
-                .productId(reportRecord.getProduct().getProductId())
-                .productName(reportRecord.getProduct().getProductName())
+                .productInfo(toSimpleProductInfoDTO(product))
+                .currentNutritionInfo(toProductNutritionInfoDTO(currentNutrition))
                 .reportStatus(reportRecord.getReportStatus())
                 .createdAt(reportRecord.getCreatedAt());
 
