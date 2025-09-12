@@ -47,7 +47,7 @@ public class ProductController {
             @CurrentUser User user,
             @RequestParam("name") String name,
             @RequestParam("manufacturer") String manufacturer,
-            @RequestPart("productImage") MultipartFile productImage,
+            @RequestPart(value = "productImage", required = false) MultipartFile productImage,
             @RequestPart("productInfoImages") List<MultipartFile> productInfoImages
     ) {
         ProductRegisterRequestDto requestDto = ProductRegisterRequestDto.builder()
