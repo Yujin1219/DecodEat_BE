@@ -39,7 +39,8 @@ public enum ErrorStatus implements BaseErrorCode {
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_001", "파일 업로드에 실패했습니다."),
 
     // 신고
-    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPONT_401", "존재하지 않는 신고 내역 입니다.");
+    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT_401", "존재하지 않는 신고 내역 입니다."),
+    ALREADY_PROCESSED_REPORT(HttpStatus.CONFLICT, "REPORT_402", "이미 처리된 신고 입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

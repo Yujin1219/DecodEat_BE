@@ -43,4 +43,17 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default // 원재료 리스트
     private List<ProductRawMaterial> ingredients = new ArrayList<>();
+
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ProductNutrition productNutrition;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductInfoImage> infoImages = new ArrayList<>();
+
+    /**
+     * 상품의 대표 이미지를 새로운 URL로 업데이트
+     */
+    public void updateProductImage(String newImageUrl) {
+        this.productImage = newImageUrl;
+    }
 }

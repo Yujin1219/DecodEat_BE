@@ -1,6 +1,5 @@
 package com.DecodEat.domain.report.dto.response;
 
-import com.DecodEat.domain.report.dto.request.ProductNutritionUpdateRequestDto;
 import com.DecodEat.domain.report.entity.ReportStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -44,6 +43,38 @@ public class ReportResponseDto {
         private Double transFat;
     }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "신고된 상품의 간략 정보")
+    public static class SimpleProductInfoDTO {
+        private Long productId;
+        private String productName;
+        private String manufacturer;
+        private String productImage;
+        private List<String> infoImageUrls;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "상품의 현재 영양 정보")
+    public static class ProductNutritionInfoDTO {
+        private Double calcium;
+        private Double carbohydrate;
+        private Double cholesterol;
+        private Double dietaryFiber;
+        private Double energy;
+        private Double fat;
+        private Double protein;
+        private Double satFat;
+        private Double sodium;
+        private Double sugar;
+        private Double transFat;
+    }
+
 
     @Getter
     @Builder
@@ -58,11 +89,8 @@ public class ReportResponseDto {
         @Schema(description = "신고자 ID", example = "2")
         private Long reporterId;
 
-        @Schema(description = "상품 ID", example = "13")
-        private Long productId;
-
-        @Schema(description = "상품명", example = "맛있는 사과")
-        private String productName;
+        @Schema(description = "신고된 상품 정보")
+        private SimpleProductInfoDTO productInfo;
 
         @Schema(description = "신고 유형", example = "NUTRITION_UPDATE")
         private String reportType;
@@ -78,6 +106,9 @@ public class ReportResponseDto {
 
         @Schema(description = "신고된 영양정보 수정 요청 내용 (영양정보 신고인 경우)", nullable = true)
         private ReportedNutritionInfo nutritionRequestInfo;
+
+        @Schema(description = "상품의 현재 DB에 저장된 영양 정보", nullable = true)
+        private ProductNutritionInfoDTO currentNutritionInfo;
 
     }
 
