@@ -13,6 +13,7 @@ import com.DecodEat.domain.report.repository.ImageReportRepository;
 import com.DecodEat.domain.report.repository.NutritionReportRepository;
 import com.DecodEat.domain.report.repository.ReportRecordRepository;
 import com.DecodEat.domain.users.entity.User;
+import com.DecodEat.global.apiPayload.code.status.ErrorStatus;
 import com.DecodEat.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -51,11 +52,27 @@ public class ReportService {
         return ReportConverter.toReportResponseDto(productId,"상품 사진 확인 요청 완료");
     }
 
+    // 신고 내역 전체 조회
     @Transactional(readOnly = true)
     public ReportResponseDto.ReportListResponseDTO getReports(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ReportRecord> reportPage = reportRecordRepository.findAllWithDetails(pageable);
         return ReportConverter.toReportListResponseDTO(reportPage);
+    }
+
+    /**
+     * 단일 신고 내역 상세 조회
+     * @param reportId 조회할 신고의 ID
+     * @return 신고 상세 정보를 담은 DTO
+     */
+    @Transactional(readOnly = true)
+    public ReportResponseDto.ReportListItemDTO getReportDetails(Long reportId) {
+
+        // 1. ID로 신고 내역 조회
+        ReportRecord reportRecord = reportRecordRepository.findByIdWithDetails(reportId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.REPORT_NOT_FOUND));
+
+        return ReportConverter.toReportListItemDTO(reportRecord);
     }
 
     /**

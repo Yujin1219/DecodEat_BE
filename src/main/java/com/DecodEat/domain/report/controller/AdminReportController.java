@@ -63,4 +63,11 @@ public class AdminReportController {
             @RequestBody(required = false) ImageUpdateRequestDto requestDto) {
         return ApiResponse.onSuccess(reportService.acceptReport(reportId, requestDto));
     }
+
+    @Operation(summary = "신고 상세 조회 API", description = "관리자가 특정 신고 내역의 상세 정보를 조회합니다.")
+    @GetMapping("/{reportId}")
+    public ApiResponse<ReportResponseDto.ReportListItemDTO> getReportDetetails(
+            @Parameter(description = "조회할 신고의 ID", example = "1") @PathVariable Long reportId) {
+        return ApiResponse.onSuccess(reportService.getReportDetails(reportId));
+    }
 }
