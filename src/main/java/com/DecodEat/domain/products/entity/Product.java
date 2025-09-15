@@ -48,7 +48,12 @@ public class Product extends BaseEntity {
     private ProductNutrition productNutrition;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<ProductInfoImage> infoImages = new ArrayList<>();
 
+    /**
+     * 상품의 대표 이미지를 새로운 URL로 업데이트
+     */
+    public void updateProductImage(String newImageUrl) {
+        this.productImage = newImageUrl;
+    }
 }

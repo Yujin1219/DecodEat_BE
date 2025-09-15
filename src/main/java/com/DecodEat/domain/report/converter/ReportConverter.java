@@ -82,10 +82,6 @@ public class ReportConverter {
                 .build();
     }
     public static ReportResponseDto.ProductNutritionInfoDTO toProductNutritionInfoDTO(ProductNutrition nutrition) {
-        // 상품에 아직 영양 정보가 등록되지 않은 경우
-        if (nutrition == null) {
-            return null;
-        }
 
         return ReportResponseDto.ProductNutritionInfoDTO.builder()
                 .calcium(nutrition.getCalcium())

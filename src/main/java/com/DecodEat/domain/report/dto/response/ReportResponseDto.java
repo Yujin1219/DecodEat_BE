@@ -1,9 +1,5 @@
 package com.DecodEat.domain.report.dto.response;
 
-import com.DecodEat.domain.products.entity.ProductNutrition;
-import com.DecodEat.domain.products.entity.ProductRawMaterial;
-import com.DecodEat.domain.report.dto.request.ProductNutritionUpdateRequestDto;
-import com.DecodEat.domain.report.entity.ImageReport;
 import com.DecodEat.domain.report.entity.ReportStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
