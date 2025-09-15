@@ -54,7 +54,7 @@ public class ReportService {
     @Transactional(readOnly = true)
     public ReportResponseDto.ReportListResponseDTO getReports(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ReportRecord> reportPage = reportRecordRepository.findAll(pageable);
+        Page<ReportRecord> reportPage = reportRecordRepository.findAllWithDetails(pageable);
         return ReportConverter.toReportListResponseDTO(reportPage);
     }
 
