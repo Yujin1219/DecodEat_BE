@@ -53,6 +53,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 2. 액세스 토큰 생성
         String accessToken = tokenProvider.generateToken(user, ACCESS_TOKEN_DURATION);
+        userService.saveUserAccessToken(user, accessToken); // 액세스 토큰 저장
 
         String targetUrl = getTargetUrl(accessToken);
 
