@@ -5,6 +5,7 @@ import com.DecodEat.domain.refreshToken.repository.RefreshTokenRepository;
 import com.DecodEat.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.DecodEat.global.apiPayload.code.status.ErrorStatus.*;
 
@@ -17,5 +18,8 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new GeneralException(UNEXPECTED_TOKEN));
     }
-
+    @Transactional
+    public void deleteByUserId(Long userId) {
+        refreshTokenRepository.deleteByUserId(userId);
+    }
 }

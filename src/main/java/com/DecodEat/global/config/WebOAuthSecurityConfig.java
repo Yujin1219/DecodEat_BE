@@ -29,6 +29,7 @@ public class WebOAuthSecurityConfig {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
     private final CorsConfigurationSource corsConfigurationSource; // CorsCongifuragtinoSource Bean 주입 위함
+    private final TokenLogoutHandler tokenLogoutHandler;
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String kakaoClientId;
 
@@ -80,6 +81,7 @@ public class WebOAuthSecurityConfig {
         // 7. 로그아웃
         http.logout(logout -> logout
                 .logoutUrl("/api/logout")
+                .addLogoutHandler(tokenLogoutHandler)
                 // 👇 카카오 로그아웃 URL로 리다이렉트
                 .logoutSuccessUrl("https://kauth.kakao.com/oauth/logout?client_id=" + kakaoClientId + "&logout_redirect_uri=https://decodeat.store/")
                 .invalidateHttpSession(true)
@@ -103,7 +105,7 @@ public class WebOAuthSecurityConfig {
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
-        return new TokenAuthenticationFilter(tokenProvider);
+        return new TokenAuthenticationFilter(tokenProvider, userService);
     }
 
     @Bean

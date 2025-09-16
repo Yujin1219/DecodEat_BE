@@ -6,6 +6,7 @@ import com.DecodEat.global.apiPayload.code.status.ErrorStatus;
 import com.DecodEat.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -20,6 +21,18 @@ public class UserService {
     public User findByEmail(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_EXISTED));
+    }
+
+    @Transactional
+    public void saveUserAccessToken(User user, String accessToken) {
+        user.updateAccessToken(accessToken);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void expireAccessToken(User user) {
+        user.expireAccessToken();
+        userRepository.save(user);
     }
 
 }

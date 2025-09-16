@@ -24,6 +24,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
+    @Column(length = 1024)
+    private String accessToken;
+
 //    @Column(nullable = false)
 //    private String password;
 
@@ -33,5 +36,13 @@ public class User extends BaseEntity {
 
     public void update(String name) {
         this.nickname = name;
+    }
+
+    public void updateAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public void expireAccessToken() {
+        this.accessToken = null;
     }
 }

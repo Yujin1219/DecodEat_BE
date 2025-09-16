@@ -46,6 +46,9 @@ public class TokenService {
         if(!jwtTokenProvider.validToken(refreshToken)){
             throw new GeneralException(UNEXPECTED_TOKEN);
         }
-        return createNewAccessToken(refreshToken);
+        String accessToken = createNewAccessToken(refreshToken);
+        userService.saveUserAccessToken(userService.findById(refreshTokenService.findByRefreshToken(refreshToken).getUserId()), accessToken);
+
+        return accessToken;
     }
 }
