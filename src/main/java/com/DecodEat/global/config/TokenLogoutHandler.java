@@ -23,14 +23,10 @@ public class TokenLogoutHandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        System.out.println("로그아웃 핸들러===============");
         String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
-        System.out.println(authorizationHeader);
         String accessToken = getAccessToken(authorizationHeader);
-        System.out.println(accessToken);
 
         if (accessToken != null && jwtTokenProvider.validToken(accessToken)) {
-            System.out.println("=========토큰 삭제 시도===============");
             // 1. 리프레시 토큰 삭제
             Long userId = jwtTokenProvider.getUserId(accessToken);
             refreshTokenService.deleteByUserId(userId);
