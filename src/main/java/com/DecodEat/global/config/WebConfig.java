@@ -1,5 +1,6 @@
 package com.DecodEat.global.config;
 
+import com.DecodEat.global.common.annotation.CurrentUserArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

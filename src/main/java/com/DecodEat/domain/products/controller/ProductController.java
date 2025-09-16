@@ -7,6 +7,7 @@ import com.DecodEat.domain.products.service.ProductService;
 import com.DecodEat.domain.users.entity.User;
 import com.DecodEat.global.apiPayload.ApiResponse;
 import com.DecodEat.global.common.annotation.CurrentUser;
+import com.DecodEat.global.common.annotation.OptionalUser;
 import com.DecodEat.global.dto.PageResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,8 +35,9 @@ public class ProductController {
             summary = "제품 조회",
             description = "단일 제품 상세 정보 조회")
     @GetMapping("/{id}")
-    public ApiResponse<ProductDetailDto> getProduct(@PathVariable Long id) {
-        return ApiResponse.onSuccess(productService.getDetail(id));
+    public ApiResponse<ProductDetailDto> getProduct(@PathVariable Long id,
+                                                    @OptionalUser User user) {
+        return ApiResponse.onSuccess(productService.getDetail(id,user));
     }
 
     @Operation(
