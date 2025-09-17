@@ -18,7 +18,9 @@ import com.DecodEat.domain.products.repository.ProductRawMaterialRepository;
 import com.DecodEat.domain.products.repository.ProductRepository;
 import com.DecodEat.domain.products.repository.RawMaterialRepository;
 import com.DecodEat.domain.products.repository.ProductSpecification;
+import com.DecodEat.domain.users.entity.Behavior;
 import com.DecodEat.domain.users.entity.User;
+import com.DecodEat.domain.users.service.UserBehaviorService;
 import com.DecodEat.global.aws.s3.AmazonS3Manager;
 import com.DecodEat.global.dto.PageResponseDto;
 import com.DecodEat.global.exception.GeneralException;
@@ -52,12 +54,16 @@ public class ProductService {
     private final ProductRawMaterialRepository productRawMaterialRepository;
     private final AmazonS3Manager amazonS3Manager;
     private final PythonAnalysisClient pythonAnalysisClient;
+    private final UserBehaviorService userBehaviorService;
 
 
     private static final int PAGE_SIZE = 12;
 
-    public ProductDetailDto getDetail(Long id) {
+    public ProductDetailDto getDetail(Long id, User user) {
         Product product = productRepository.findById(id).orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
+
+        if(user != null)
+            userBehaviorService.saveUserBehavior(user,product, Behavior.VIEW);
 
         List<ProductInfoImage> images = productImageRepository.findByProduct(product);
         List<String> imageUrls = images.stream().map(ProductInfoImage::getImageUrl).toList();
@@ -106,6 +112,8 @@ public class ProductService {
         // 파이썬 서버에 비동기로 분석 요청
         requestAnalysisAsync(savedProduct.getProductId(), productInfoImageUrls);
 
+        userBehaviorService.saveUserBehavior(user,savedProduct,Behavior.REGISTER); // todo: 만약에 분석 실패?
+
         return ProductConverter.toProductRegisterDto(savedProduct, productInfoImageUrls);
     }
 
@@ -117,6 +125,7 @@ public class ProductService {
         return ProductConverter.toProductListResultDTO(slice);
     }
 
+    // todo: 검색은 상품 엔티티와 1:1 매핑 불가능 -> userbehavior 어떻게?
     public List<ProductSearchResponseDto.SearchResultPrevDto> searchProducts(String productName) {
 
         Specification<Product> spec = Specification.where(ProductSpecification.isCompleted());
