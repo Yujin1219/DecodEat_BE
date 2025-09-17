@@ -61,7 +61,6 @@ public class ProductService {
 
     public ProductDetailDto getDetail(Long id, User user) {
         Product product = productRepository.findById(id).orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
-
         if(user != null)
             userBehaviorService.saveUserBehavior(user,product, Behavior.VIEW);
 
