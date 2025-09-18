@@ -17,7 +17,7 @@ public class CorsConfig {
 
         configuration.setAllowedOriginPatterns(List.of( "https://decodeat.netlify.app",
                 "http://localhost:8080","http://localhost:5173", "http://decodeat.store", "https://decodeat.store", "http://www.decodeat.store", "https://www.decodeat.store" ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // 쿠키/인증정보 포함 허용
 
