@@ -25,6 +25,8 @@ public class ProductDetailDto {
 
     private List<String> imageUrl;
 
+    private boolean isLiked;
+
     private Double calcium;
     private Double carbohydrate;
     private Double cholesterol;

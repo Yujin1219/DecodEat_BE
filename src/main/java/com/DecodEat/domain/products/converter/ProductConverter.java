@@ -17,7 +17,8 @@ import static com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategor
 public class ProductConverter {
     public static ProductDetailDto toProductDetailDto(Product product,
                                                       List<String> productInfoImageUrls ,
-                                                      ProductNutrition productNutrition) {
+                                                      ProductNutrition productNutrition,
+                                                      boolean isLiked) {
         Map<RawMaterialCategory, List<String>> nutrientsMap =
                 product.getIngredients().stream()
                         .collect(Collectors.groupingBy(
@@ -35,6 +36,7 @@ public class ProductConverter {
                 .name(product.getProductName())
                 .manufacturer(product.getManufacturer())
                 .productImage(product.getProductImage())
+                .isLiked(isLiked)
                 .calcium(productNutrition.getCalcium())
                 .carbohydrate(productNutrition.getCarbohydrate())
                 .cholesterol(productNutrition.getCholesterol())

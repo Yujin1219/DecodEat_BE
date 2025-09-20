@@ -11,4 +11,6 @@ public interface ProductLikeRepository extends JpaRepository<ProductLike, Long> 
 
     Optional<ProductLike> findByUserAndProduct(User user, Product product);
 
+    boolean existsByUserAndProduct(User user, Product product);
+
 }

@@ -62,7 +62,12 @@ public class ProductService {
 
         ProductNutrition productNutrition = productNutritionRepository.findByProduct(product).orElseThrow(() -> new GeneralException(PRODUCT_NUTRITION_NOT_EXISTED));
 
-        return ProductConverter.toProductDetailDto(product, imageUrls, productNutrition);
+        // 좋아요 여부 확인
+        boolean isLiked = false;
+        if(user != null){
+            isLiked = productLikeRepository.existsByUserAndProduct(user,product);
+        }
+        return ProductConverter.toProductDetailDto(product, imageUrls, productNutrition, isLiked);
     }
 
     public ProductRegisterResponseDto addProduct(User user, ProductRegisterRequestDto requestDto, MultipartFile productImage, List<MultipartFile> productInfoImages) {
