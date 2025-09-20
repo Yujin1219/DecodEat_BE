@@ -10,12 +10,14 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/reports")
 @Tag(name = "[관리자] 신고 관리")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminReportController {
 
     private final ReportService reportService;
