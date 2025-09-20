@@ -3,6 +3,7 @@ package com.DecodEat.domain.products.converter;
 import com.DecodEat.domain.products.dto.request.ProductRegisterRequestDto;
 import com.DecodEat.domain.products.dto.response.*;
 import com.DecodEat.domain.products.entity.Product;
+import com.DecodEat.domain.products.entity.ProductInfoImage;
 import com.DecodEat.domain.products.entity.ProductNutrition;
 import com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory;
 import org.springframework.data.domain.Slice;
@@ -120,5 +121,14 @@ public class ProductConverter {
                 .hasNext(slice.hasNext())
                 .nextCursorId(nextCursorId)
                 .build();
+    }
+
+    public static ProductLikeResponseDTO toProductLikeDTO(Long productId, boolean isLiked) {
+
+        return ProductLikeResponseDTO.builder()
+                .productId(productId)
+                .isLiked(isLiked)
+                .build();
+
     }
 }
