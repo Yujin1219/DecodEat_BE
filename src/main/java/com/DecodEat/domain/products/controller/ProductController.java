@@ -105,4 +105,12 @@ public class ProductController {
         return ApiResponse.onSuccess(productService.getRegisterHistory(user, pageable));
     }
 
+    @Operation(summary = "제품 좋아요 추가/취소", description = "좋아요를 누르면 추가, 다시 누르면 취소됩니다.")
+    @PostMapping("/{productId}/like")
+    public ApiResponse<ProductLikeResponseDTO> addOrUpdateLike(
+            @CurrentUser User user,
+            @Parameter(description = "제품 ID") @PathVariable Long productId
+    ) {
+        return ApiResponse.onSuccess(productService.addOrUpdateLike(user.getId(), productId));
+    }
 }

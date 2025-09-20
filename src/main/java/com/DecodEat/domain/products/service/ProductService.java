@@ -5,21 +5,13 @@ import com.DecodEat.domain.products.converter.ProductConverter;
 import com.DecodEat.domain.products.dto.request.AnalysisRequestDto;
 import com.DecodEat.domain.products.dto.request.ProductRegisterRequestDto;
 import com.DecodEat.domain.products.dto.response.*;
-import com.DecodEat.domain.products.entity.DecodeStatus;
-import com.DecodEat.domain.products.entity.Product;
-import com.DecodEat.domain.products.entity.ProductInfoImage;
-import com.DecodEat.domain.products.entity.ProductNutrition;
-import com.DecodEat.domain.products.entity.ProductRawMaterial;
+import com.DecodEat.domain.products.entity.*;
 import com.DecodEat.domain.products.entity.RawMaterial.RawMaterial;
 import com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory;
-import com.DecodEat.domain.products.repository.ProductImageRepository;
-import com.DecodEat.domain.products.repository.ProductNutritionRepository;
-import com.DecodEat.domain.products.repository.ProductRawMaterialRepository;
-import com.DecodEat.domain.products.repository.ProductRepository;
-import com.DecodEat.domain.products.repository.RawMaterialRepository;
-import com.DecodEat.domain.products.repository.ProductSpecification;
+import com.DecodEat.domain.products.repository.*;
 import com.DecodEat.domain.users.entity.Behavior;
 import com.DecodEat.domain.users.entity.User;
+import com.DecodEat.domain.users.repository.UserRepository;
 import com.DecodEat.domain.users.service.UserBehaviorService;
 import com.DecodEat.global.aws.s3.AmazonS3Manager;
 import com.DecodEat.global.dto.PageResponseDto;
@@ -37,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -55,9 +48,9 @@ public class ProductService {
     private final AmazonS3Manager amazonS3Manager;
     private final PythonAnalysisClient pythonAnalysisClient;
     private final UserBehaviorService userBehaviorService;
-
-
     private static final int PAGE_SIZE = 12;
+    private final UserRepository userRepository;
+    private final ProductLikeRepository productLikeRepository;
 
     public ProductDetailDto getDetail(Long id, User user) {
         Product product = productRepository.findById(id).orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
@@ -324,5 +317,37 @@ public class ProductService {
             log.warn("Failed to parse double value: {}", value);
             return null;
         }
+    }
+
+    @Transactional
+    public ProductLikeResponseDTO addOrUpdateLike(Long userId, Long productId) {
+
+        // 1. 유저 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new GeneralException(USER_NOT_EXISTED));
+
+        // 2. 제품 확인
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
+
+        // 3. 기존 좋아요 여부 확인
+        Optional<ProductLike> existingLike = productLikeRepository.findByUserAndProduct(user, product);
+
+        boolean isLiked;
+
+        if (existingLike.isPresent()) {
+            // 이미 눌렀으면 → 좋아요 취소
+            productLikeRepository.delete(existingLike.get());
+            isLiked = false;
+        } else {
+            // 처음 누르면 → 좋아요 추가
+            ProductLike productLike = ProductLike.builder()
+                    .user(user)
+                    .product(product)
+                    .build();
+            productLikeRepository.save(productLike);
+            isLiked = true;
+        }
+        return ProductConverter.toProductLikeDTO(productId, isLiked);
     }
 }
