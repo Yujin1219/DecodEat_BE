@@ -14,7 +14,7 @@ public class RawMaterial { // 원재료 데이터베이스
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rawMaterialId;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @Enumerated(EnumType.STRING)
