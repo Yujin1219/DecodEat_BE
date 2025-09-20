@@ -1,6 +1,7 @@
 name: DecodEat CI/CD with Gradle, Test, and Docker
 
 on:
+  workflow_dispatch: 
   push:
     branches: [ "main" ]
   pull_request:
