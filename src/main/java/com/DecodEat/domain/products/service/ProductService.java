@@ -365,6 +365,8 @@ public class ProductService {
             // 이미 눌렀으면 → 좋아요 취소
             productLikeRepository.delete(existingLike.get());
             isLiked = false;
+            userBehaviorService.deleteUserBehavior(user,product, Behavior.LIKE);
+
         } else {
             // 처음 누르면 → 좋아요 추가
             ProductLike productLike = ProductLike.builder()
@@ -373,6 +375,7 @@ public class ProductService {
                     .build();
             productLikeRepository.save(productLike);
             isLiked = true;
+            userBehaviorService.saveUserBehavior(user,product, Behavior.LIKE);
         }
         return ProductConverter.toProductLikeDTO(productId, isLiked);
     }
