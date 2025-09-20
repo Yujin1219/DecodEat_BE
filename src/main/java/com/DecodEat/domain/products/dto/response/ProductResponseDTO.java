@@ -55,6 +55,9 @@ public class ProductResponseDTO {
 
         @Schema(description = "뷴석 상태", example = "COMPLETED")
         private DecodeStatus decodeStatus;
+
+        @Schema(description = "좋아요 여부", example = "true")
+        private boolean isLiked;
     }
 
 }

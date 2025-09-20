@@ -27,10 +27,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.DecodEat.global.apiPayload.code.status.ErrorStatus.*;
@@ -62,7 +59,12 @@ public class ProductService {
 
         ProductNutrition productNutrition = productNutritionRepository.findByProduct(product).orElseThrow(() -> new GeneralException(PRODUCT_NUTRITION_NOT_EXISTED));
 
-        return ProductConverter.toProductDetailDto(product, imageUrls, productNutrition);
+        // 좋아요 여부 확인
+        boolean isLiked = false;
+        if(user != null){
+            isLiked = productLikeRepository.existsByUserAndProduct(user,product);
+        }
+        return ProductConverter.toProductDetailDto(product, imageUrls, productNutrition, isLiked);
     }
 
     public ProductRegisterResponseDto addProduct(User user, ProductRegisterRequestDto requestDto, MultipartFile productImage, List<MultipartFile> productInfoImages) {
@@ -110,11 +112,25 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductResponseDTO.ProductListResultDTO getProducts(Long cursorId) {
+    public ProductResponseDTO.ProductListResultDTO getProducts(Long cursorId, User user) {
         Pageable pageable = PageRequest.of(0, PAGE_SIZE);
         Slice<Product> slice = productRepository.findCompletedProductsByCursor(cursorId, pageable);
 
-        return ProductConverter.toProductListResultDTO(slice);
+        // 기본값: 전부 false
+        Set<Long> likedProductIds = Collections.emptySet();
+
+        // user가 null이 아닐 때만 DB에서 좋아요 여부 조회
+        if (user != null && !slice.isEmpty()) {
+            List<Long> productIds = slice.getContent().stream()
+                    .map(Product::getProductId)
+                    .toList();
+
+            likedProductIds = new HashSet<>(
+                    productLikeRepository.findLikedProductIdsByUserAndProductIds(user, productIds)
+            );
+        }
+
+        return ProductConverter.toProductListResultDTO(slice, likedProductIds);
     }
 
     // todo: 검색은 상품 엔티티와 1:1 매핑 불가능 -> userbehavior 어떻게?
