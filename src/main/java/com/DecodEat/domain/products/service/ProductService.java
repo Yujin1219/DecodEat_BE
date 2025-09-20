@@ -283,24 +283,34 @@ public class ProductService {
 
         for (String ingredientName : ingredientNames) {
             if (ingredientName != null && !ingredientName.trim().isEmpty()) {
+                String trimmedIngredientName = ingredientName.trim();
                 // 원재료가 이미 존재하는지 확인
-                RawMaterial rawMaterial = rawMaterialRepository.findByName(ingredientName.trim())
-                        .orElseGet(() -> {
-                            // 새로운 원재료 생성 (기본 카테고리는 OTHERS)
-                            RawMaterial newRawMaterial = RawMaterial.builder()
-                                    .name(ingredientName.trim())
-                                    .category(RawMaterialCategory.OTHERS)
-                                    .build();
-                            return rawMaterialRepository.save(newRawMaterial);
-                        });
+                List<RawMaterial> rawMaterials = rawMaterialRepository.findByName(trimmedIngredientName);
 
-                // 상품-원재료 관계 생성
-                ProductRawMaterial productRawMaterial = ProductRawMaterial.builder()
-                        .product(product)
-                        .rawMaterial(rawMaterial)
-                        .build();
-                
-                productRawMaterialRepository.save(productRawMaterial);
+                if (rawMaterials.isEmpty()) {
+                    // 새로운 원재료 생성 (기본 카테고리는 OTHERS)
+                    RawMaterial newRawMaterial = RawMaterial.builder()
+                            .name(trimmedIngredientName)
+                            .category(RawMaterialCategory.OTHERS)
+                            .build();
+                    rawMaterialRepository.save(newRawMaterial);
+
+                    // 상품-원재료 관계 생성
+                    ProductRawMaterial productRawMaterial = ProductRawMaterial.builder()
+                            .product(product)
+                            .rawMaterial(newRawMaterial)
+                            .build();
+                    productRawMaterialRepository.save(productRawMaterial);
+                } else {
+                    // 모든 조회된 원재료에 대해 상품-원재료 관계 생성
+                    for (RawMaterial rawMaterial : rawMaterials) {
+                        ProductRawMaterial productRawMaterial = ProductRawMaterial.builder()
+                                .product(product)
+                                .rawMaterial(rawMaterial)
+                                .build();
+                        productRawMaterialRepository.save(productRawMaterial);
+                    }
+                }
             }
         }
     }
