@@ -10,6 +10,7 @@ import org.springframework.data.domain.Slice;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory.*;
@@ -69,13 +70,14 @@ public class ProductConverter {
     }
 
     // 단일 Product → ProductListItemDTO 변환
-    public static ProductResponseDTO.ProductListItemDTO toProductListItemDTO(Product product){
+    public static ProductResponseDTO.ProductListItemDTO toProductListItemDTO(Product product, boolean isLiked) {
         return ProductResponseDTO.ProductListItemDTO.builder()
                 .productId(product.getProductId())
                 .manufacturer(product.getManufacturer())
                 .productName(product.getProductName())
                 .productImage(product.getProductImage())
                 .decodeStatus(product.getDecodeStatus())
+                .isLiked(isLiked)
                 .build();
     }
 
@@ -107,9 +109,9 @@ public class ProductConverter {
 
 
     // Slice<Product> → ProductListResultDTO 변환
-    public static ProductResponseDTO.ProductListResultDTO toProductListResultDTO(Slice<Product> slice) {
+    public static ProductResponseDTO.ProductListResultDTO toProductListResultDTO(Slice<Product> slice, Set<Long> likedProductIds) {
         List<ProductResponseDTO.ProductListItemDTO> productList = slice.getContent().stream()
-                .map(ProductConverter::toProductListItemDTO)
+                .map(product -> toProductListItemDTO(product, likedProductIds.contains(product.getProductId())))
                 .toList();
 
         Long nextCursorId = (slice.hasNext() && !productList.isEmpty())

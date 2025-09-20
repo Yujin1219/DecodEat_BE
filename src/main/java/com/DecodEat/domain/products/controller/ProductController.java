@@ -67,8 +67,8 @@ public class ProductController {
     )
     @GetMapping("/latest")
     public ApiResponse<ProductResponseDTO.ProductListResultDTO> getProductList(
-            @RequestParam(required = false) Long cursorId) {
-        return ApiResponse.onSuccess(productService.getProducts(cursorId));
+            @RequestParam(required = false) Long cursorId, @OptionalUser User user) {
+        return ApiResponse.onSuccess(productService.getProducts(cursorId, user));
     }
 
     @GetMapping("/search/autocomplete")
