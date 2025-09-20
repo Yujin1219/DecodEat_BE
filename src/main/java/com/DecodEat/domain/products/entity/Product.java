@@ -1,6 +1,7 @@
 package com.DecodEat.domain.products.entity;
 
 import com.DecodEat.domain.users.entity.User;
+import com.DecodEat.domain.users.entity.UserBehavior;
 import com.DecodEat.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -49,6 +50,9 @@ public class Product extends BaseEntity {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductInfoImage> infoImages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserBehavior> userBehaviors = new ArrayList<>();
 
     /**
      * 상품의 대표 이미지를 새로운 URL로 업데이트
