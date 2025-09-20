@@ -25,7 +25,7 @@ public class PythonAnalysisClient {
         log.info("Sending analysis request to Python server: {}", pythonServerUrl);
         
         return webClient.post()
-                .uri(pythonServerUrl + "/api/v1/analyze")
+                .uri(pythonServerUrl + "api/v1/analyze")
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(AnalysisResponseDto.class)
