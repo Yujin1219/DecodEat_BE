@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserBehaviorService {
+
     private final UserBehaviorRepository userBehaviorRepository;
+
     @Transactional
     public void saveUserBehavior(User user, Product product, Behavior behavior) {
         UserBehavior userBehavior = UserBehavior.builder()
@@ -22,4 +24,10 @@ public class UserBehaviorService {
                 .build();
         userBehaviorRepository.save(userBehavior);
     }
+
+    @Transactional
+    public void deleteUserBehavior(User user, Product product, Behavior behavior) {
+        userBehaviorRepository.deleteByUserAndProductAndBehavior(user, product, behavior);
+    }
+
 }
