@@ -8,6 +8,7 @@ public class UserConverter {
         return UserInfoDto.builder()
                 .nickname(user.getNickname())
                 .email(user.getEmail())
+                .role(user.getRole())
                 .build();
     }
 }
