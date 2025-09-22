@@ -15,6 +15,9 @@ public class ProductRegisterHistoryDto {
         @Schema(description = "상품 ID", example = "1")
         private Long productId;
 
+        @Schema(description = "상품명", example = "곰곰육개장")
+        private String name;
+
         @Schema(description = "상품 등록일", example = "2025-09-05")
         @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDateTime registerDate;
