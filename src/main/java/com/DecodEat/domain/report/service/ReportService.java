@@ -38,7 +38,7 @@ public class ReportService {
 
         Product productProxy = productRepository.getReferenceById(productId); //SELECT 쿼리 없이 ID만 가진 프록시 객체를 가져옴
 
-        nutritionReportRepository.save(ReportConverter.toNutritionReport(user.getId(), productProxy, requestDto));
+        nutritionReportRepository.save(ReportConverter.toNutritionReport(user.getId(), user.getNickname(), productProxy, requestDto));
 
         return ReportConverter.toReportResponseDto(productId,"상품 정보 업데이트 요청 완료");
     }

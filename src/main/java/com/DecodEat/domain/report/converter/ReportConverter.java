@@ -23,10 +23,11 @@ public class ReportConverter {
                 .build();
     }
 
-    public static NutritionReport toNutritionReport(Long reporterId, Product product,ProductNutritionUpdateRequestDto requestDto){
+    public static NutritionReport toNutritionReport(Long reporterId, String nickname, Product product,ProductNutritionUpdateRequestDto requestDto){
         return NutritionReport.builder()
                 .product(product)
                 .reporterId(reporterId)
+                .nickname(nickname)
                 .reportStatus(ReportStatus.IN_PROGRESS)
                 .calcium(requestDto.getCalcium())
                 .carbohydrate(requestDto.getCarbohydrate())
@@ -106,6 +107,7 @@ public class ReportConverter {
         ReportResponseDto.ReportListItemDTO.ReportListItemDTOBuilder builder = ReportResponseDto.ReportListItemDTO.builder()
                 .reportId(reportRecord.getId())
                 .reporterId(reportRecord.getReporterId())
+                .nickname(reportRecord.getNickname())
                 .productInfo(toSimpleProductInfoDTO(product))
                 .currentNutritionInfo(toProductNutritionInfoDTO(currentNutrition))
                 .reportStatus(reportRecord.getReportStatus())
