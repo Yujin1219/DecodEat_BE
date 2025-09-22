@@ -13,4 +13,5 @@ import java.util.List;
 @NoArgsConstructor
 public class AnalysisRequestDto {
     private List<String> image_urls;
+    private Long product_id;
 }

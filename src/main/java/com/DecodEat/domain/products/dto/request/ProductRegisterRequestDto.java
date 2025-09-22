@@ -20,9 +20,4 @@ public class ProductRegisterRequestDto {
 
     @NotBlank(message = "제조사명은 필수 입력 항목입니다.")
     private String manufacturer;
-
-//    파일은 json 과 하나의 dto로 묶어서 다룰 수 없음
-//    private MultipartFile productImage;
-//    @NotNull
-//    private List<MultipartFile> productInfoImages;
 }
