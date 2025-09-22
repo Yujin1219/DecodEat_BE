@@ -101,6 +101,7 @@ public class ProductConverter {
     public static ProductRegisterHistoryDto toProductRegisterHistoryDto(Product product){
         return ProductRegisterHistoryDto.builder()
                 .productId(product.getProductId())
+                .name(product.getProductName())
                 .registerDate(product.getCreatedAt())
                 .productImage(product.getProductImage())
                 .decodeStatus(product.getDecodeStatus())
