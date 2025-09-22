@@ -43,10 +43,11 @@ public class ReportConverter {
                 .build();
     }
 
-    public static ImageReport toImageReport(Long reporterId, Product product, String imageUrl){
+    public static ImageReport toImageReport(Long reporterId, String nickname, Product product, String imageUrl){
         return ImageReport.builder()
                 .product(product)
                 .reporterId(reporterId)
+                .nickname(nickname)
                 .reportStatus(ReportStatus.IN_PROGRESS)
                 .imageUrl(imageUrl)
                 .build();
