@@ -47,7 +47,7 @@ public class ReportService {
 
         Product productProxy = productRepository.getReferenceById(productId); //SELECT 쿼리 없이 ID만 가진 프록시 객체를 가져옴
 
-        imageReportRepository.save(ReportConverter.toImageReport(user.getId(), productProxy, imageUrl));
+        imageReportRepository.save(ReportConverter.toImageReport(user.getId(), user.getNickname(), productProxy, imageUrl));
 
         return ReportConverter.toReportResponseDto(productId,"상품 사진 확인 요청 완료");
     }
