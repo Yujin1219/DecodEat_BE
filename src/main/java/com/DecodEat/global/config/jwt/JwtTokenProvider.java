@@ -86,7 +86,7 @@ public class JwtTokenProvider implements InitializingBean {
 
         // 2. Create the authority with the required "ROLE_" prefix.
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(
-                new SimpleGrantedAuthority("ROLE_" + userRole)
+                new SimpleGrantedAuthority(userRole)
         );
         Long userId = claims.get("id", Long.class);
 
