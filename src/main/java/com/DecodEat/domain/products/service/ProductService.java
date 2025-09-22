@@ -198,6 +198,7 @@ public class ProductService {
         try {
             AnalysisRequestDto request = AnalysisRequestDto.builder()
                     .image_urls(imageUrls)
+                    .product_id(productId)
                     .build();
 
             pythonAnalysisClient.analyzeProduct(request)
