@@ -29,6 +29,9 @@ public abstract class ReportRecord extends BaseEntity {
     @Column(nullable = false)
     private Long reporterId;
 
+    @Column(nullable = false)
+    private String nickname;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Schema(name = "처리 상태", example = "IN_PROGRESS")

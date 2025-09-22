@@ -89,6 +89,9 @@ public class ReportResponseDto {
         @Schema(description = "신고자 ID", example = "2")
         private Long reporterId;
 
+        @Schema(description = "신고자 닉네임", example = "닉네임")
+        private String nickname;
+
         @Schema(description = "신고된 상품 정보")
         private SimpleProductInfoDTO productInfo;
 
