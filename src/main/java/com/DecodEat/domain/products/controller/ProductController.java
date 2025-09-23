@@ -113,4 +113,12 @@ public class ProductController {
     ) {
         return ApiResponse.onSuccess(productService.addOrUpdateLike(user.getId(), productId));
     }
+
+    @GetMapping("/recommendation/product-based")
+    @Operation(summary = "상품 기반 추천", description = "상품 영양성분, 원재료명 기반 추천")
+    public ApiResponse<List<ProductSearchResponseDto.ProductPrevDto>> getProductBasedRecommendation(@RequestParam Long productId,
+                                                                                                    @RequestParam(defaultValue = "5") int limit) {
+        return ApiResponse.onSuccess(productService.getProductBasedRecommendation(productId, limit));
+    }
+
 }

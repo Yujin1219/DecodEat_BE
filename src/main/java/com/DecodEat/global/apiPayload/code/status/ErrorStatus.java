@@ -22,6 +22,9 @@ public enum ErrorStatus implements BaseErrorCode {
     PAGE_OUT_OF_RANGE(HttpStatus.BAD_REQUEST,"SEARCH_400","요청한 페이지가 전체 페이지 수를 초과합니다."),
     NO_RESULT(HttpStatus.NOT_FOUND,"SEARCH_401","검색 결과가 없습니다."),
 
+    // 추천
+    NO_RECOMMENDATION_PRODUCT_BASED(HttpStatus.NOT_FOUND,"RECOMMENDATION_400","유사한 상품이 존재하지 않습니다."),
+
     // 기본 에러
     _BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON_400", "잘못된 요청입니다."),
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON_401", "인증이 필요합니다."),

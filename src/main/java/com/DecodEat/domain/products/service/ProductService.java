@@ -3,6 +3,7 @@ package com.DecodEat.domain.products.service;
 import com.DecodEat.domain.products.client.PythonAnalysisClient;
 import com.DecodEat.domain.products.converter.ProductConverter;
 import com.DecodEat.domain.products.dto.request.AnalysisRequestDto;
+import com.DecodEat.domain.products.dto.request.ProductBasedRecommendationRequestDto;
 import com.DecodEat.domain.products.dto.request.ProductRegisterRequestDto;
 import com.DecodEat.domain.products.dto.response.*;
 import com.DecodEat.domain.products.entity.*;
@@ -13,9 +14,11 @@ import com.DecodEat.domain.users.entity.Behavior;
 import com.DecodEat.domain.users.entity.User;
 import com.DecodEat.domain.users.repository.UserRepository;
 import com.DecodEat.domain.users.service.UserBehaviorService;
+import com.DecodEat.global.apiPayload.code.status.ErrorStatus;
 import com.DecodEat.global.aws.s3.AmazonS3Manager;
 import com.DecodEat.global.dto.PageResponseDto;
 import com.DecodEat.global.exception.GeneralException;
+import jdk.jfr.Frequency;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -51,8 +54,8 @@ public class ProductService {
 
     public ProductDetailDto getDetail(Long id, User user) {
         Product product = productRepository.findById(id).orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
-        if(user != null)
-            userBehaviorService.saveUserBehavior(user,product, Behavior.VIEW);
+        if (user != null)
+            userBehaviorService.saveUserBehavior(user, product, Behavior.VIEW);
 
         List<ProductInfoImage> images = productImageRepository.findByProduct(product);
         List<String> imageUrls = images.stream().map(ProductInfoImage::getImageUrl).toList();
@@ -61,8 +64,8 @@ public class ProductService {
 
         // 좋아요 여부 확인
         boolean isLiked = false;
-        if(user != null){
-            isLiked = productLikeRepository.existsByUserAndProduct(user,product);
+        if (user != null) {
+            isLiked = productLikeRepository.existsByUserAndProduct(user, product);
         }
         return ProductConverter.toProductDetailDto(product, imageUrls, productNutrition, isLiked);
     }
@@ -106,7 +109,7 @@ public class ProductService {
         // 파이썬 서버에 비동기로 분석 요청
         requestAnalysisAsync(savedProduct.getProductId(), productInfoImageUrls);
 
-        userBehaviorService.saveUserBehavior(user,savedProduct,Behavior.REGISTER); // todo: 만약에 분석 실패?
+        userBehaviorService.saveUserBehavior(user, savedProduct, Behavior.REGISTER); // todo: 만약에 분석 실패?
 
         return ProductConverter.toProductRegisterDto(savedProduct, productInfoImageUrls);
     }
@@ -175,7 +178,7 @@ public class ProductService {
         return new PageResponseDto<>(result);
     }
 
-    public PageResponseDto<ProductRegisterHistoryDto> getRegisterHistory(User user, Pageable pageable){
+    public PageResponseDto<ProductRegisterHistoryDto> getRegisterHistory(User user, Pageable pageable) {
 
         Long userId = user.getId();
 
@@ -185,10 +188,32 @@ public class ProductService {
         return new PageResponseDto<>(result);
     }
 
+    public List<ProductSearchResponseDto.ProductPrevDto> getProductBasedRecommendation(Long productId, int limit) {
+
+        ProductBasedRecommendationRequestDto request =
+                new ProductBasedRecommendationRequestDto(productId.intValue(), limit);
+
+        ProductBasedRecommendationResponseDto response =
+                pythonAnalysisClient.getProductBasedRecommendation(request).block();
+
+        if (response == null) {
+            log.warn("No recommendation response for product ID: {}", productId);
+            throw new GeneralException(NO_RECOMMENDATION_PRODUCT_BASED);
+        }
+
+        List<Product> productList = response.getRecommendations().stream()
+                .map(r -> productRepository.findById(r.getProductId())
+                        .orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED)))
+                .toList();
+
+        return productList.stream().map(ProductConverter::toProductPrevDto).toList();
+    }
+
+
     @Async
     public void requestAnalysisAsync(Long productId, List<String> imageUrls) {
         log.info("Starting async analysis for product ID: {}", productId);
-        
+
         if (imageUrls == null || imageUrls.isEmpty()) {
             log.warn("No images to analyze for product ID: {}", productId);
             updateProductStatus(productId, DecodeStatus.FAILED, "No images provided for analysis");
@@ -218,7 +243,7 @@ public class ProductService {
     @Transactional
     public void processAnalysisResult(Long productId, AnalysisResponseDto response) {
         log.info("Processing analysis result for product ID: {} with status: {}", productId, response.getDecodeStatus());
-        
+
         try {
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
@@ -244,10 +269,10 @@ public class ProductService {
         try {
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
-            
+
             product.setDecodeStatus(status);
             productRepository.save(product);
-            
+
             log.info("Updated product ID: {} status to: {} - {}", productId, status, message);
         } catch (Exception e) {
             log.error("Failed to update product status for ID: {}", productId, e);
@@ -256,7 +281,7 @@ public class ProductService {
 
     private void saveNutritionInfo(Long productId, AnalysisResponseDto response) {
         log.info("Saving nutrition info for product ID: {}", productId);
-        
+
         try {
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
@@ -277,7 +302,7 @@ public class ProductService {
                         .sugar(parseDouble(response.getNutrition_info().getSugar()))
                         .transFat(parseDouble(response.getNutrition_info().getTrans_fat()))
                         .build();
-                
+
                 productNutritionRepository.save(nutrition);
                 log.info("Saved nutrition info for product ID: {}", productId);
             }
@@ -366,7 +391,7 @@ public class ProductService {
             // 이미 눌렀으면 → 좋아요 취소
             productLikeRepository.delete(existingLike.get());
             isLiked = false;
-            userBehaviorService.deleteUserBehavior(user,product, Behavior.LIKE);
+            userBehaviorService.deleteUserBehavior(user, product, Behavior.LIKE);
 
         } else {
             // 처음 누르면 → 좋아요 추가
@@ -376,7 +401,7 @@ public class ProductService {
                     .build();
             productLikeRepository.save(productLike);
             isLiked = true;
-            userBehaviorService.saveUserBehavior(user,product, Behavior.LIKE);
+            userBehaviorService.saveUserBehavior(user, product, Behavior.LIKE);
         }
         return ProductConverter.toProductLikeDTO(productId, isLiked);
     }
