@@ -12,6 +12,8 @@ import com.DecodEat.domain.products.entity.RawMaterial.RawMaterialCategory;
 import com.DecodEat.domain.products.repository.*;
 import com.DecodEat.domain.users.entity.Behavior;
 import com.DecodEat.domain.users.entity.User;
+import com.DecodEat.domain.users.entity.UserBehavior;
+import com.DecodEat.domain.users.repository.UserBehaviorRepository;
 import com.DecodEat.domain.users.repository.UserRepository;
 import com.DecodEat.domain.users.service.UserBehaviorService;
 import com.DecodEat.global.apiPayload.code.status.ErrorStatus;
@@ -31,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.*;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static com.DecodEat.global.apiPayload.code.status.ErrorStatus.*;
@@ -51,6 +54,7 @@ public class ProductService {
     private static final int PAGE_SIZE = 12;
     private final UserRepository userRepository;
     private final ProductLikeRepository productLikeRepository;
+    private final UserBehaviorRepository userBehaviorRepository;
 
     public ProductDetailDto getDetail(Long id, User user) {
         Product product = productRepository.findById(id).orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED));
@@ -208,6 +212,40 @@ public class ProductService {
                 .toList();
 
         return productList.stream().map(ProductConverter::toProductPrevDto).toList();
+    }
+
+    public UserBasedRecommendationResponseDto getUserBasedRecommendation(User user) {
+        Long userId = user.getId();
+        int randomCase = ThreadLocalRandom.current().nextInt(3);
+        Behavior selectedBehavior = null;
+        String message = "";
+        switch (randomCase) {
+            case 0:
+                selectedBehavior = Behavior.LIKE; // 0번은 좋아요 기반
+                message = "내가 최근 좋아요한 상품과 관련된 상품";
+                break;
+                case 1:
+                selectedBehavior = Behavior.REGISTER; // 1번 등록 기반
+                    message = "내가 최근 등록한 상품과 관련된 상품";
+                break;
+                case 2:
+                selectedBehavior = Behavior.VIEW; // 2번 조회 기반
+                    message = "내가 최근 조회한 상품과 관련된 상품";
+                break;
+
+        }
+
+        Long standardProductId = productRepository.findRandomProductIdByUserIdAndBehavior(userId,selectedBehavior)
+                .orElseThrow(()-> new GeneralException(NO_USER_BEHAVIOR_EXISTED));
+        Product standardProduct = productRepository.findById(standardProductId).orElseThrow(()->new GeneralException(NO_RESULT));
+
+        List<ProductSearchResponseDto.ProductPrevDto> products = getProductBasedRecommendation(standardProductId, 5);
+
+        return UserBasedRecommendationResponseDto.builder()
+                .standardProduct(ProductConverter.toSearchResultPrevDto(standardProduct))
+                .message(message)
+                .products(products)
+                .build();
     }
 
 

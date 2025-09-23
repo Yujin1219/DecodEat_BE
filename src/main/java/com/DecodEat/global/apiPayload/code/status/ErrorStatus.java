@@ -24,7 +24,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 추천
     NO_RECOMMENDATION_PRODUCT_BASED(HttpStatus.NOT_FOUND,"RECOMMENDATION_400","유사한 상품이 존재하지 않습니다."),
-
+    NO_USER_BEHAVIOR_EXISTED(HttpStatus.NOT_FOUND,"RECOMMENDATION_401","유저의 해당 메타 데이터가 존재하지 않습니다."),
     // 기본 에러
     _BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON_400", "잘못된 요청입니다."),
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON_401", "인증이 필요합니다."),
