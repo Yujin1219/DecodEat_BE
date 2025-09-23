@@ -58,7 +58,7 @@ public class WebOAuthSecurityConfig {
 //                .anyRequest().permitAll());
                 .requestMatchers("/img/**", "/css/**", "/js/**", "/favicon.ico", "/error").permitAll()
                 .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll() //누구나 가능
-                .requestMatchers("/api/token", "/api/products/latest","/api/products/search/**").permitAll() //누구나 가능
+                .requestMatchers("/api/token", "/api/products/latest","/api/products/search/**","/api/products/recommendation/**").permitAll() //누구나 가능
                 .requestMatchers(new RegexRequestMatcher("^/api/products/\\d+$", "GET")).permitAll()
                 .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN") // 유저 관련 API는 USER 또는 ADMIN 권한 필요
                 .requestMatchers("/api/admin/**").hasRole("ADMIN") // 어드민 관련 API는 ADMIN 권한만 가능
