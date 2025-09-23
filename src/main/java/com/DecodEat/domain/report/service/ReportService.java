@@ -4,7 +4,6 @@ import com.DecodEat.domain.products.entity.Product;
 import com.DecodEat.domain.products.entity.ProductNutrition;
 import com.DecodEat.domain.products.repository.ProductRepository;
 import com.DecodEat.domain.report.converter.ReportConverter;
-import com.DecodEat.domain.report.dto.request.ImageUpdateRequestDto;
 import com.DecodEat.domain.report.dto.request.ProductNutritionUpdateRequestDto;
 import com.DecodEat.domain.report.dto.response.ReportResponseDto;
 import com.DecodEat.domain.report.entity.*;
@@ -14,6 +13,7 @@ import com.DecodEat.domain.report.repository.NutritionReportRepository;
 import com.DecodEat.domain.report.repository.ReportRecordRepository;
 import com.DecodEat.domain.users.entity.User;
 import com.DecodEat.global.apiPayload.code.status.ErrorStatus;
+import com.DecodEat.global.aws.s3.AmazonS3Manager;
 import com.DecodEat.global.exception.GeneralException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +22,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 import static com.DecodEat.global.apiPayload.code.status.ErrorStatus.*;
 
@@ -33,6 +36,7 @@ public class ReportService {
     private final NutritionReportRepository nutritionReportRepository;
     private final ImageReportRepository imageReportRepository;
     private final ReportRecordRepository reportRecordRepository;
+    private final AmazonS3Manager amazonS3Manager;
 
     public ReportResponseDto requestUpdateNutrition(User user, Long productId, ProductNutritionUpdateRequestDto requestDto){
 
@@ -103,7 +107,7 @@ public class ReportService {
      * @param reportId 수락할 신고의 ID
      * @return 처리 결과를 담은 DTO
      */
-    public ReportResponseDto acceptReport(Long reportId, ImageUpdateRequestDto requestDto){
+    public ReportResponseDto acceptReport(Long reportId, MultipartFile newImageUrl){
         // 1. ID로 신고 내역 조회
         ReportRecord reportRecord = reportRecordRepository.findById(reportId)
                 .orElseThrow(() -> new GeneralException(REPORT_NOT_FOUND));
@@ -115,16 +119,29 @@ public class ReportService {
 
         Product product = reportRecord.getProduct();
 
-        // 3. 신고 유횽에 따른 로직 분기
+        // 3. 신고 유형에 따른 로직 분기
         if (reportRecord instanceof NutritionReport) {
             ProductNutrition productNutrition = product.getProductNutrition();
             productNutrition.updateFromReport((NutritionReport) reportRecord);
 
         } else if (reportRecord instanceof ImageReport) {
-            // 새로운 이미지가 없는 경우 이미지 삭제 -> null로 처리
-            // 새로운 이미지가 있는 경우 해당 이미지로 변경
-            String newImageUrl = (requestDto != null) ? requestDto.getNewImageUrl() : null;
-            product.updateProductImage(newImageUrl);
+
+            String oldImageUrl = product.getProductImage();
+
+            // 새로운 이미지가 있는 경우 새로운 이미지로 변경
+            if(newImageUrl != null && !newImageUrl.isEmpty()) {
+                String imageKey = "products/" + UUID.randomUUID() + "_" + newImageUrl.getOriginalFilename();
+                String uploadedImageUrl = amazonS3Manager.uploadFile(imageKey, newImageUrl);
+                product.updateProductImage(uploadedImageUrl);
+            } else {
+                // 새로운 이미지가 없는 경우 이미지 삭제 -> null로 처리
+                product.updateProductImage(null);
+            }
+
+            if(oldImageUrl != null && !oldImageUrl.isEmpty()) {
+                String oldImageKey = amazonS3Manager.getKeyFromUrl(oldImageUrl);
+                amazonS3Manager.deleteFile(oldImageKey);
+            }
         }
 
         // 4. reportstatus 상태를 accepted 변경
