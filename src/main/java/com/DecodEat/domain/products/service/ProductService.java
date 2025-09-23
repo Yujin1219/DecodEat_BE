@@ -202,6 +202,7 @@ public class ProductService {
         }
 
         List<Product> productList = response.getRecommendations().stream()
+                .filter(r -> r.getProductId() != null)
                 .map(r -> productRepository.findById(r.getProductId())
                         .orElseThrow(() -> new GeneralException(PRODUCT_NOT_EXISTED)))
                 .toList();
