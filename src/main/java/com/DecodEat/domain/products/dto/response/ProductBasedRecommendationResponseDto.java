@@ -12,18 +12,18 @@ import java.util.List;
 public class ProductBasedRecommendationResponseDto {
 
     private List<RecommendationDetailDto> recommendations;
-    private int totalCount;
-    private Long userId;
-    private Long referenceProductId;
-    private String recommendationType;
-    private String dataQuality;
+    private int total_count;
+    private Long user_id;
+    private Long reference_product_id;
+    private String recommendation_type;
+    private String data_quality;
     private String message;
 
     @Getter
     @NoArgsConstructor
     public static class RecommendationDetailDto {
-        private Long productId;
-        private double similarityScore;
-        private String recommendationReason;
+        private Long product_id;
+        private double similarity_score;
+        private String recommendation_reason;
     }
 }
