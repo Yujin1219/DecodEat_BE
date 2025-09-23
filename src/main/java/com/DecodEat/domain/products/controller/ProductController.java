@@ -121,4 +121,10 @@ public class ProductController {
         return ApiResponse.onSuccess(productService.getProductBasedRecommendation(productId, limit));
     }
 
+    @GetMapping("/recommendation/user-behavior-based")
+    @Operation(summary = "상품 기반 추천", description = "사용자 행동 기반 추천")
+    public ApiResponse<UserBasedRecommendationResponseDto> getUserBasedRecommendation(@CurrentUser User user) {
+        return ApiResponse.onSuccess(productService.getUserBasedRecommendation(user));
+    }
+
 }

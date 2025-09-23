@@ -9,9 +9,11 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import com.DecodEat.domain.users.entity.Behavior;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
@@ -26,4 +28,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     void deleteByDecodeStatusIn(List<DecodeStatus> statuses);
 
     Page<Product> findByUserId(Long userId, Pageable pageable);
+
+    @Query(value = "SELECT p.product_id FROM product p JOIN user_behavior ub ON p.product_id = ub.product_id WHERE ub.user_id = :userId AND ub.behavior = :behavior ORDER BY RAND() LIMIT 1", nativeQuery = true)
+    Optional<Long> findRandomProductIdByUserIdAndBehavior(@Param("userId") Long userId, @Param("behavior") Behavior behavior);
 }
