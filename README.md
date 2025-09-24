@@ -1,55 +1,96 @@
-graph TD
-    subgraph "End-User"
-        Client[📱/💻 Client Application]
-    end
+# DecodEat - Backend Server
 
-    subgraph "AWS Cloud (ap-northeast-2)"
-        ALB
-        subgraph "Amazon EC2"
-            SpringBoot
-            FastAPI
-        end
-        subgraph "Data Persistence Layer"
-            RDS
-            S3
-            VectorDB
-        end
-    end
+[![cicd](https://github.com/DecodEat/BE-SpringBoot/actions/workflows/workflow.yml/badge.svg)](https://github.com/DecodEat/BE-SpringBoot/actions/workflows/workflow.yml)
 
-    subgraph "External Services"
-        Kakao[Kakao Authentication API]
-        GoogleAI[Google Cloud AI Platform<br/>(Vision API / Gemini)]
-    end
+DecodEat은 식품 정보를 분석하고 사용자 맞춤 추천을 제공하는 서비스입니다. 이 프로젝트는 해당 서비스의 백엔드 서버입니다.
 
-    %% Data Flows
-    Client -- HTTPS Request --> ALB
-    ALB -- HTTP --> SpringBoot
+## 🛠️ 주요 기술 스택
 
-    SpringBoot -- "1. Kakao Redirect" --> Client
-    Client -- "2. User Consent" --> Kakao
-    Kakao -- "3. Auth Code" --> SpringBoot
-    SpringBoot -- "4. Token Request" --> Kakao
-    Kakao -- "5. Access Token" --> SpringBoot
-    SpringBoot -- "6. User Info Request" --> Kakao
-    Kakao -- "7. User Profile" --> SpringBoot
-    SpringBoot -- "8. Issue JWT" --> Client
+| 구분 | 기술 |
+| --- | --- |
+| **Framework** | Spring Boot 3.2.5 |
+| **Language** | Java 17 |
+| **Build Tool** | Gradle 8.7 |
+| **Database** | Spring Data JPA, QueryDSL |
+| **Authentication** | Spring Security, JWT, OAuth 2.0 |
+| **API Documentation** | Swagger (Springdoc OpenAPI) |
+| **Cloud Service** | AWS S3 |
+| **Containerization** | Docker, Docker Compose |
+| **CI/CD** | GitHub Actions |
 
-    Client -- "Image Upload (JWT)" --> SpringBoot
-    SpringBoot -- "AWS SDK (Credentials)" --> S3
-    SpringBoot -- "JDBC" --> RDS
-    SpringBoot -- "HTTP POST (Image Location)" --> FastAPI
-    FastAPI -- "AWS SDK" --> S3[Fetch Image]
-    FastAPI -- "REST API Call" --> GoogleAI
-    GoogleAI -- "Analysis Result (JSON)" --> FastAPI
-    FastAPI -- "Generate Vector" --> FastAPI
-    FastAPI -- "Analysis Result + Vector (JSON)" --> SpringBoot
-    SpringBoot -- "Store Vector" --> VectorDB
-    SpringBoot -- "JDBC" --> RDS[Update Metadata]
-    SpringBoot -- "HTTP 200 OK" --> Client
+## ✨ 주요 기능
 
-    Client -- "Recommendation Request (Image ID, JWT)" --> SpringBoot
-    SpringBoot -- "Query by ID" --> VectorDB
-    SpringBoot -- "k-NN Search" --> VectorDB
-    VectorDB -- "List of similar Image IDs" --> SpringBoot
-    SpringBoot -- "JDBC (Batch Fetch)" --> RDS[Hydrate Metadata]
-    SpringBoot -- "JSON Response" --> Client
+### 1. **사용자 관리 및 인증**
+- JWT 토큰 기반의 자체 로그인 및 회원가입 기능을 제공합니다.
+- OAuth 2.0을 연동하여 Google, Kakao 등 소셜 로그인을 지원합니다.
+- Refresh Token을 이용한 토큰 재발급 로직을 구현하여 사용자 편의성을 높였습니다.
+
+### 2. **상품(식품) 정보 관리**
+- 사용자가 직접 상품 정보를 등록하고, 이미지(원재료, 영양정보표)를 S3에 업로드할 수 있습니다.
+- 상품명, 카테고리 등 다양한 조건으로 상품을 검색하고 필터링하는 기능을 제공합니다.
+- 상품 상세 정보 조회, 찜하기(좋아요) 기능을 제공합니다.
+
+### 3. **영양 정보 분석 및 추천**
+- 외부 Python 분석 서버와 비동기 통신(WebClient)하여 상품의 영양 정보를 분석합니다.
+- 사용자 기반 및 상품 기반의 추천 알고리즘을 통해 개인화된 상품 추천 목록을 제공합니다.
+
+### 4. **오류 제보 및 관리**
+- 사용자는 등록된 상품의 영양 정보나 이미지에 대한 오류를 제보할 수 있습니다.
+- 관리자는 제보된 내용을 확인하고, 상품 정보를 수정하거나 제보를 처리할 수 있습니다.
+
+### 5. **API 및 예외 처리**
+- 표준화된 API 응답 형식을(`ApiResponse`) 사용하여 클라이언트와의 통신 효율성을 높였습니다.
+- `ErrorStatus`를 통해 예외 상황을 체계적으로 관리하고, `ExceptionAdvice`에서 공통으로 처리합니다.
+
+## 🚀 시작하기
+
+### **Prerequisites**
+- Java 17
+- Gradle 8.7
+- Docker (선택 사항)
+
+### **Installation & Run**
+1. **Git Clone**
+   ```bash
+   git clone https://github.com/DecodEat/BE-SpringBoot.git
+   cd BE-SpringBoot
+   ```
+
+2. **`application.yml` 설정**
+   `src/main/resources/` 경로에 `application.yml` 파일을 생성하고 데이터베이스, JWT, OAuth, AWS S3 관련 설정값을 입력해야 합니다.
+
+3. **애플리케이션 실행**
+   ```bash
+   ./gradlew bootRun
+   ```
+
+## 📝 API 문서
+
+서버 실행 후, 아래 URL을 통해 API 명세를 확인할 수 있습니다.
+- **Swagger UI:** [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
+## 📁 프로젝트 구조
+
+```
+.
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── DecodEat
+│   │   │           ├── DecodEatApplication.java
+│   │   │           ├── domain                # 비즈니스 로직 (하위 도메인으로 분리)
+│   │   │           │   ├── products          # 상품
+│   │   │           │   ├── users             # 사용자
+│   │   │           │   ├── report            # 제보
+│   │   │           │   └── refreshToken      # 리프레시 토큰
+│   │   │           └── global                # 공통 모듈
+│   │   │               ├── apiPayload        # 공통 응답/예외 처리
+│   │   │               ├── aws               # AWS 관련 유틸
+│   │   │               ├── config            # Spring 설정 (Security, Swagger 등)
+│   │   │               └── exception         # 전역 예외 핸들링
+│   │   └── resources
+│   │       ├── application.yml
+│   └── test
+...
+```
