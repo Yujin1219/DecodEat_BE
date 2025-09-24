@@ -21,14 +21,13 @@ DecodEat은 식품 정보를 분석하고 사용자 맞춤 추천을 제공하�
 ## ✨ 주요 기능
 
 ### 1. **사용자 관리 및 인증**
-- JWT 토큰 기반의 자체 로그인 및 회원가입 기능을 제공합니다.
-- OAuth 2.0을 연동하여 Google, Kakao 등 소셜 로그인을 지원합니다.
+- OAuth 2.0을 연동하여 Kakao 소셜 로그인을 지원합니다.
 - Refresh Token을 이용한 토큰 재발급 로직을 구현하여 사용자 편의성을 높였습니다.
 
 ### 2. **상품(식품) 정보 관리**
 - 사용자가 직접 상품 정보를 등록하고, 이미지(원재료, 영양정보표)를 S3에 업로드할 수 있습니다.
 - 상품명, 카테고리 등 다양한 조건으로 상품을 검색하고 필터링하는 기능을 제공합니다.
-- 상품 상세 정보 조회, 찜하기(좋아요) 기능을 제공합니다.
+- 상품 상세 정보 조회, 좋아요 기능을 제공합니다.
 
 ### 3. **영양 정보 분석 및 추천**
 - 외부 Python 분석 서버와 비동기 통신(WebClient)하여 상품의 영양 정보를 분석합니다.
@@ -68,6 +67,10 @@ DecodEat은 식품 정보를 분석하고 사용자 맞춤 추천을 제공하�
 
 서버 실행 후, 아래 URL을 통해 API 명세를 확인할 수 있습니다.
 - **Swagger UI:** [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+<img width="1434" height="287" alt="image" src="https://github.com/user-attachments/assets/8af2a117-f8f7-4710-8245-2f757e7d9641" />
+<img width="1434" height="657" alt="image" src="https://github.com/user-attachments/assets/7da3b2ca-9296-4fd9-893f-e91cc14df378" />
+<img width="1434" height="432" alt="image" src="https://github.com/user-attachments/assets/4e53f711-42e9-4cac-a325-1ead3ccb9dcd" />  
+
 
 ## 📁 프로젝트 구조
 
@@ -82,7 +85,7 @@ DecodEat은 식품 정보를 분석하고 사용자 맞춤 추천을 제공하�
 │   │   │           ├── domain                # 비즈니스 로직 (하위 도메인으로 분리)
 │   │   │           │   ├── products          # 상품
 │   │   │           │   ├── users             # 사용자
-│   │   │           │   ├── report            # 제보
+│   │   │           │   ├── report            # 신고
 │   │   │           │   └── refreshToken      # 리프레시 토큰
 │   │   │           └── global                # 공통 모듈
 │   │   │               ├── apiPayload        # 공통 응답/예외 처리
