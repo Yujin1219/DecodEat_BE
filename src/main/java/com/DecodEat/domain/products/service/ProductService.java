@@ -239,7 +239,7 @@ public class ProductService {
                 .orElseThrow(()-> new GeneralException(NO_USER_BEHAVIOR_EXISTED));
         Product standardProduct = productRepository.findById(standardProductId).orElseThrow(()->new GeneralException(NO_RESULT));
 
-        List<ProductSearchResponseDto.ProductPrevDto> products = getProductBasedRecommendation(standardProductId, 5);
+        List<ProductSearchResponseDto.ProductPrevDto> products = getProductBasedRecommendation(standardProductId, 10);
 
         return UserBasedRecommendationResponseDto.builder()
                 .standardProduct(ProductConverter.toSearchResultPrevDto(standardProduct))
