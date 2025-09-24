@@ -11,7 +11,7 @@ DecodEat은 식품 정보를 분석하고 사용자 맞춤 추천을 제공하�
 | **Framework** | Spring Boot 3.2.5 |
 | **Language** | Java 17 |
 | **Build Tool** | Gradle 8.7 |
-| **Database** | Spring Data JPA, QueryDSL |
+| **Database** | Spring Data JPA, MYSQL |
 | **Authentication** | Spring Security, JWT, OAuth 2.0 |
 | **API Documentation** | Swagger (Springdoc OpenAPI) |
 | **Cloud Service** | AWS S3 |
