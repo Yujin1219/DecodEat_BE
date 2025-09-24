@@ -31,4 +31,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     @Query(value = "SELECT p.product_id FROM product p JOIN user_behavior ub ON p.product_id = ub.product_id WHERE ub.user_id = :userId AND ub.behavior = :behavior ORDER BY RAND() LIMIT 1", nativeQuery = true)
     Optional<Long> findRandomProductIdByUserIdAndBehavior(@Param("userId") Long userId, @Param("behavior") Behavior behavior);
+
+    @Query("SELECT pl.product FROM ProductLike pl WHERE pl.user.id = :userId")
+    Page<Product> findLikedProductsByUserId(@Param("userId") Long userId, Pageable pageable);
 }

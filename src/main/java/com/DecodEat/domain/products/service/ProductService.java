@@ -192,6 +192,16 @@ public class ProductService {
         return new PageResponseDto<>(result);
     }
 
+    public PageResponseDto<ProductSearchResponseDto.ProductPrevDto> getMyLikedProducts(User user, Pageable pageable) {
+
+        Long userId = user.getId();
+
+        Page<Product> pagedProducts = productRepository.findLikedProductsByUserId(userId, pageable);
+        Page<ProductSearchResponseDto.ProductPrevDto> result = pagedProducts.map(ProductConverter::toProductPrevDto);
+
+        return new PageResponseDto<>(result);
+    }
+
     public List<ProductSearchResponseDto.ProductPrevDto> getProductBasedRecommendation(Long productId, int limit) {
 
         ProductBasedRecommendationRequestDto request =

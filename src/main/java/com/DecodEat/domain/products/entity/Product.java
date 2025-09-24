@@ -54,6 +54,9 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserBehavior> userBehaviors = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ProductLike> productLikes = new ArrayList<>();
+
     /**
      * 상품의 대표 이미지를 새로운 URL로 업데이트
      */
