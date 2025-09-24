@@ -57,6 +57,8 @@ public class ProductConverter {
                 .additives(nutrientsMap.get(ADDITIVES))
                 .others(nutrientsMap.get(OTHERS))
                 .allergens(nutrientsMap.get(ALLERGENS))
+                .solubleDietaryFibers(nutrientsMap.get(SOLUBLE_DIETARY_FIBER))
+                .insolubleDietaryFibers(nutrientsMap.get(INSOLUBLE_DIETARY_FIBER))
                 .build();
     }
 

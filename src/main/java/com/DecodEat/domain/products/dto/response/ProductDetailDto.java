@@ -46,6 +46,8 @@ public class ProductDetailDto {
     private List<String>  refinedCarbs;
     private List<String>  additives;
     private List<String>  allergens;
+    private List<String> solubleDietaryFibers;
+    private List<String> insolubleDietaryFibers;
     private List<String>  others;
 
 }
