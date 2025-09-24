@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ImageReport extends ReportRecord {
 
-    @Column(name = "image_url")
+    @Column(name = "image_url",length = 2048)
     private String imageUrl;
 
 }

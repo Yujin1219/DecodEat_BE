@@ -192,6 +192,16 @@ public class ProductService {
         return new PageResponseDto<>(result);
     }
 
+    public PageResponseDto<ProductSearchResponseDto.ProductPrevDto> getMyLikedProducts(User user, Pageable pageable) {
+
+        Long userId = user.getId();
+
+        Page<Product> pagedProducts = productRepository.findLikedProductsByUserId(userId, pageable);
+        Page<ProductSearchResponseDto.ProductPrevDto> result = pagedProducts.map(ProductConverter::toProductPrevDto);
+
+        return new PageResponseDto<>(result);
+    }
+
     public List<ProductSearchResponseDto.ProductPrevDto> getProductBasedRecommendation(Long productId, int limit) {
 
         ProductBasedRecommendationRequestDto request =
@@ -239,10 +249,10 @@ public class ProductService {
                 .orElseThrow(()-> new GeneralException(NO_USER_BEHAVIOR_EXISTED));
         Product standardProduct = productRepository.findById(standardProductId).orElseThrow(()->new GeneralException(NO_RESULT));
 
-        List<ProductSearchResponseDto.ProductPrevDto> products = getProductBasedRecommendation(standardProductId, 5);
+        List<ProductSearchResponseDto.ProductPrevDto> products = getProductBasedRecommendation(standardProductId, 10);
 
         return UserBasedRecommendationResponseDto.builder()
-                .standardProduct(ProductConverter.toSearchResultPrevDto(standardProduct))
+                .standardProduct(ProductConverter.toProductPrevDto(standardProduct))
                 .message(message)
                 .products(products)
                 .build();

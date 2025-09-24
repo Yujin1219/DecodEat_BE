@@ -127,4 +127,14 @@ public class ProductController {
         return ApiResponse.onSuccess(productService.getUserBasedRecommendation(user));
     }
 
+    @GetMapping("/my-like")
+    @Operation(summary = "내가 좋아요 한 상품", description ="내가 좋아요한 상품 페이징")
+    public ApiResponse<PageResponseDto<ProductSearchResponseDto.ProductPrevDto>> getMyLikedProducts(@CurrentUser User user,
+                                                                                                    @RequestParam(defaultValue = "1") int page,
+                                                                                                    @RequestParam(defaultValue = "20") int size){
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending()); // 0-based
+
+        return ApiResponse.onSuccess(productService.getMyLikedProducts(user, pageable));
+    }
+
 }
