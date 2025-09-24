@@ -137,4 +137,10 @@ public class ProductController {
         return ApiResponse.onSuccess(productService.getMyLikedProducts(user, pageable));
     }
 
+    @DeleteMapping("/{productId}")
+    @Operation(summary = "상품 삭제", description = "해당 상품과 관련된 모든 데이터가 삭제됩니다.")
+    public ApiResponse<String> deleteProduct( @PathVariable Long productId) {
+        return ApiResponse.onSuccess(productService.deleteProduct(productId));
+    }
+
 }
