@@ -454,4 +454,9 @@ public class ProductService {
         }
         return ProductConverter.toProductLikeDTO(productId, isLiked);
     }
+
+    public String deleteProduct(Long productId) {
+        productRepository.deleteById(productId);
+        return productId.toString()+"번 상품이 삭제되었습니다.";
+    }
 }
