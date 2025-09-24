@@ -13,6 +13,6 @@ import java.util.List;
 @Builder
 public class UserBasedRecommendationResponseDto {
     private String message;
-    private ProductSearchResponseDto.SearchResultPrevDto standardProduct;
+    private ProductSearchResponseDto.ProductPrevDto standardProduct;
     private List<ProductSearchResponseDto.ProductPrevDto> products;
 }

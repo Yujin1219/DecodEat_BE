@@ -252,7 +252,7 @@ public class ProductService {
         List<ProductSearchResponseDto.ProductPrevDto> products = getProductBasedRecommendation(standardProductId, 10);
 
         return UserBasedRecommendationResponseDto.builder()
-                .standardProduct(ProductConverter.toSearchResultPrevDto(standardProduct))
+                .standardProduct(ProductConverter.toProductPrevDto(standardProduct))
                 .message(message)
                 .products(products)
                 .build();
