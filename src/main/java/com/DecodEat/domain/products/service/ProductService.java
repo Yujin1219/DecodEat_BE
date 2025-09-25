@@ -245,7 +245,7 @@ public class ProductService {
 
         }
 
-        Long standardProductId = productRepository.findRandomProductIdByUserIdAndBehavior(userId,selectedBehavior)
+        Long standardProductId = productRepository.findRandomProductIdByUserIdAndBehavior(userId,selectedBehavior.name())
                 .orElseThrow(()-> new GeneralException(NO_USER_BEHAVIOR_EXISTED));
         Product standardProduct = productRepository.findById(standardProductId).orElseThrow(()->new GeneralException(NO_RESULT));
 
