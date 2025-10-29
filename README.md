@@ -35,7 +35,7 @@ DecodEat은 식품 정보를 분석하고 사용자 맞춤 추천을 제공하�
 ### 3. **영양 정보 분석 및 추천**
 - 외부 Python 분석 서버와 비동기 통신(WebClient)하여 상품의 영양 정보를 분석합니다.
 - 사용자 기반 및 상품 기반의 추천 알고리즘을 통해 개인화된 상품 추천 목록을 제공합니다.
-<img width="1019" height="704" alt="image" src="https://github.com/user-attachments/assets/c85aefa1-f484-48ac-8915-50372f80886b" />
+<img width="809" height="692" alt="image" src="https://github.com/user-attachments/assets/31279261-82a1-4e5b-b597-6f58a6262ef6" />
 
 ### 4. **오류 제보 및 관리**
 - 사용자는 등록된 상품의 영양 정보나 이미지에 대한 오류를 제보할 수 있습니다.
