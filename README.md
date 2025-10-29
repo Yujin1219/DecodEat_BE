@@ -23,19 +23,24 @@ DecodEat은 식품 정보를 분석하고 사용자 맞춤 추천을 제공하�
 ### 1. **사용자 관리 및 인증**
 - OAuth 2.0을 연동하여 Kakao 소셜 로그인을 지원합니다.
 - Refresh Token을 이용한 토큰 재발급 로직을 구현하여 사용자 편의성을 높였습니다.
+<img width="2940" height="1602" alt="image" src="https://github.com/user-attachments/assets/37822d0d-264e-43de-a8b1-e64b596e9dc4" />
 
 ### 2. **상품(식품) 정보 관리**
 - 사용자가 직접 상품 정보를 등록하고, 이미지(원재료, 영양정보표)를 S3에 업로드할 수 있습니다.
 - 상품명, 카테고리 등 다양한 조건으로 상품을 검색하고 필터링하는 기능을 제공합니다.
 - 상품 상세 정보 조회, 좋아요 기능을 제공합니다.
+<img width="2940" height="2115" alt="image" src="https://github.com/user-attachments/assets/84d55561-40c4-4c8f-9749-feddb53ece51" />
+<img width="1066" height="683" alt="image" src="https://github.com/user-attachments/assets/aef297ca-d1bf-45ba-9740-88c2949f6948" />
 
 ### 3. **영양 정보 분석 및 추천**
 - 외부 Python 분석 서버와 비동기 통신(WebClient)하여 상품의 영양 정보를 분석합니다.
 - 사용자 기반 및 상품 기반의 추천 알고리즘을 통해 개인화된 상품 추천 목록을 제공합니다.
+<img width="1019" height="704" alt="image" src="https://github.com/user-attachments/assets/c85aefa1-f484-48ac-8915-50372f80886b" />
 
 ### 4. **오류 제보 및 관리**
 - 사용자는 등록된 상품의 영양 정보나 이미지에 대한 오류를 제보할 수 있습니다.
 - 관리자는 제보된 내용을 확인하고, 상품 정보를 수정하거나 제보를 처리할 수 있습니다.
+<img width="784" height="579" alt="image" src="https://github.com/user-attachments/assets/60d0c0a9-5440-4814-9e5e-86982c19b51a" />
 
 ### 5. **API 및 예외 처리**
 - 표준화된 API 응답 형식을(`ApiResponse`) 사용하여 클라이언트와의 통신 효율성을 높였습니다.
